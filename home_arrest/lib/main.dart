@@ -1,19 +1,57 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
-void main() {
-  runApp(const MainApp());
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'providers/client_provider.dart';
+import 'routes.dart';
+import 'theme/theme.dart';
+import 'view/onboarding/splash/splash_screen.dart';
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+  }
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+void main() async {
+  HttpOverrides.global = MyHttpOverrides();
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const AppProvider());
+}
 
+class AppProvider extends StatelessWidget {
+  const AppProvider({super.key});
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ClientProvider()),
+      ],
+      child: const MyApp(),
+    );
+  }
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    SystemUiOverlayStyle style = SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent);
+    ThemeData theme = getCustomThemeData(context, brightness: Brightness.light);
+    SystemChrome.setSystemUIOverlayStyle(theme.appBarTheme.systemOverlayStyle ?? style);
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: theme,
+        initialRoute: SplashScreen.routeName,
+        onGenerateRoute: (settings) => Routes.onGenerateRoute(settings),
       ),
     );
   }

@@ -9,11 +9,31 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  cupertino_icons: ^1.0.2
+
+  #network
+  http: ^0.13.3
+  get: ^4.6.1
+
+  # State Management
+  provider: ^6.0.4
+
+  # UI
+  path_provider: ^2.0.11
+  google_fonts: ^4.0.4
+  flutter_staggered_animations: ^1.1.1
+
+  # Database
+  shared_preferences: ^2.2.2
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  intl: ^0.18.1
   flutter_lints: ^2.0.0
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/
