@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../utils/utils.dart';
+
 class AppbarMixin {
   Widget leading({double size = 80, double radius = 10, Color? color, VoidCallback? onPressed}) {
     return Builder(
@@ -14,14 +16,25 @@ class AppbarMixin {
     );
   }
 
-  AppBar baseStyleAppBar({required String title, Widget? leadingWidget, bool automaticallyImplyLeading = true, List<Widget>? actions}) {
+  AppBar baseStyleAppBar({
+    required String title,
+    Widget? leadingWidget,
+    bool automaticallyImplyLeading = true,
+    List<Widget>? actions,
+    Color? backgroundColor = const Color(0xFF0D0E2C),
+    Color? titleColor = Colors.white,
+  }) {
     Widget leadingView = leadingWidget ?? leading();
     return AppBar(
-      backgroundColor: const Color(0xFF0D0E2C),
+      backgroundColor: backgroundColor,
       leading: automaticallyImplyLeading ? leadingView : null,
       automaticallyImplyLeading: automaticallyImplyLeading,
-      centerTitle: false,
-      title: Text(title),
+      elevation: 0,
+      centerTitle: true,
+      title: Text(
+        title,
+        style: Utils.safeGoogleFont('Poppins', fontSize: 16, fontWeight: FontWeight.w500, color: titleColor),
+      ),
       actions: actions,
       leadingWidth: 68,
     );

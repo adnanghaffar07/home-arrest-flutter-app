@@ -75,23 +75,18 @@ class Utils {
     }
   }
 
-  static void showCustomSnackBar(BuildContext context, String message, {bool isError = true}) {
+  static void showToast(BuildContext context, String message, {bool isError = true}) {
     if (message.isNotEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), duration: const Duration(seconds: 2),));
-      // Get.showSnackbar(
-      //   GetSnackBar(
-      //     backgroundColor: isError ? Colors.red : Colors.green,
-      //     message: message,
-      //     maxWidth: 1000,
-      //     duration: const Duration(seconds: 3),
-      //     snackStyle: SnackStyle.FLOATING,
-      //     margin: const EdgeInsets.all(10),
-      //     borderRadius: 10,
-      //     isDismissible: true,
-      //     snackPosition: SnackPosition.TOP,
-      //     dismissDirection: DismissDirection.horizontal,
-      //   ),
-      // );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.white,
+          content: Text(
+            message,
+            style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w500, color: const Color(0xFF21356A)),
+          ),
+          duration: const Duration(seconds: 2),
+        ),
+      );
     }
   }
 }

@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:device_preview/device_preview.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +20,12 @@ class MyHttpOverrides extends HttpOverrides {
 void main() async {
   HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const AppProvider());
+  runApp(
+    DevicePreview(
+      enabled: !kReleaseMode,
+      builder: (context) => const AppProvider(),
+    ),
+  );
 }
 
 class AppProvider extends StatelessWidget {
@@ -49,7 +56,6 @@ class MyApp extends StatelessWidget {
       },
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: theme,
         initialRoute: SplashScreen.routeName,
         onGenerateRoute: (settings) => Routes.onGenerateRoute(settings),
       ),

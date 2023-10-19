@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:home_arrest/view/onboarding/sign_in/sign_in_screen.dart';
 
 import '../../../constants/image_constants.dart';
 
@@ -17,13 +18,14 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 4), () {
-      // Navigator.pushReplacementNamed(context, CreateClientScreen.routeName);
+      Navigator.pushReplacementNamed(context, SignInScreen.routeName);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF21356A),
       body: AnimationLimiter(
         child: AnimationConfiguration.staggeredList(
           duration: const Duration(milliseconds: 1500),

@@ -1,10 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:home_arrest/constants/image_constants.dart';
 
 import '../../utils/utils.dart';
 
-class InputTextField extends StatelessWidget {
+class UnderLineInputTextField extends StatelessWidget {
   final String? label;
   final Widget? trailingLabel;
   final bool isRequired;
@@ -26,7 +27,7 @@ class InputTextField extends StatelessWidget {
   final TextStyle? labelStyle;
   final void Function()? onTap;
 
-  const InputTextField({
+  const UnderLineInputTextField({
     Key? key,
     this.label,
     this.trailingLabel,
@@ -52,6 +53,7 @@ class InputTextField extends StatelessWidget {
 
   Widget buildInputLine() {
     return TextFormField(
+      style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white),
       controller: controller,
       focusNode: focusNode,
       initialValue: initialValue,
@@ -74,30 +76,22 @@ class InputTextField extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(10),
-      child: Container(
-        height: 50,
-        decoration: BoxDecoration(
-          color: const Color(0xFFF1F4FF),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        padding: const EdgeInsets.only(left: 20, right: 10),
-        child: Center(
-          child: TextFormField(
-            style: Utils.safeGoogleFont('Poppins', fontSize: 14, color: Colors.black),
-            controller: controller,
-            focusNode: focusNode,
-            initialValue: initialValue,
-            obscureText: obscureText,
-            onChanged: onChanged,
-            decoration: decoration,
-            keyboardType: keyboardType,
-            inputFormatters: textInputFormatter,
-            enabled: enabled,
-            maxLength: maxLength,
-            cursorColor: cursorColor,
-            textInputAction: textInputAction,
-            onFieldSubmitted: onSaved,
-          ),
+      child: Center(
+        child: TextFormField(
+          style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white),
+          controller: controller,
+          focusNode: focusNode,
+          initialValue: initialValue,
+          obscureText: obscureText,
+          onChanged: onChanged,
+          decoration: decoration,
+          keyboardType: keyboardType,
+          inputFormatters: textInputFormatter,
+          enabled: enabled,
+          maxLength: maxLength,
+          cursorColor: cursorColor,
+          textInputAction: textInputAction,
+          onFieldSubmitted: onSaved,
         ),
       ),
     );
@@ -143,22 +137,20 @@ class LabelInput extends StatelessWidget {
     TextStyle? style,
     required Color colorRequired,
   }) {
-    Widget text = RichText(
-      text: TextSpan(
-        text: value,
-        children: [
-          if (requiredValue) ...[TextSpan(text: '*', style: TextStyle(color: colorRequired, fontSize: 20))]
-        ],
-        style: style,
-      ),
-    );
+    Widget text = RichText(text: TextSpan(text: value, style: style));
     if (trailing != null) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [const SizedBox(width: 16), trailing ?? Container(), Flexible(child: text)],
+        children: [
+          const SizedBox(width: 16),
+          Flexible(child: text),
+          trailing ?? Container(),
+        ],
       );
     }
-    return text;
+    return Row(
+      children: [text, Image.asset(ImagesConstants.requiredIcon, width: 20, height: 20, color: requiredValue ? Colors.white : Colors.transparent)],
+    );
   }
 
   @override

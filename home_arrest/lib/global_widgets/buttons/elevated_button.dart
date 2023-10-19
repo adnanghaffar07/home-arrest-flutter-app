@@ -8,13 +8,13 @@ class CustomElevatedButton extends StatelessWidget {
   final double borderRadius;
   final Widget? icon;
 
-  const CustomElevatedButton({super.key, this.onTap, required this.title, this.unPressColor = const Color(0xFFEB3934), this.pressColor = const Color(0xFFEB3934), this.borderRadius = 8.0, this.icon});
+  const CustomElevatedButton({super.key, this.onTap, required this.title, this.unPressColor = const Color(0xFF21356A), this.pressColor = const Color(0xFF384569), this.borderRadius = 10.0, this.icon});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 43,
+      height: 50,
       child: ElevatedButton(
         onPressed: onTap,
         style: ButtonStyle(
