@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../../../global_widgets/global_scaffold/global_scaffold.dart';
 import '../../../mixins/appbar_mixin.dart';
 import '../../../utils/utils.dart';
+import '../client_profile/client_profile_screen.dart';
 
 class ClientDashboardScreen extends StatelessWidget with AppbarMixin {
   static const String routeName = '/client-dashboard';
@@ -26,6 +27,20 @@ class ClientDashboardScreen extends StatelessWidget with AppbarMixin {
               },
               icon: Icon(Icons.adaptive.arrow_back, color: const Color(0xFF21356A)),
             ),
+            actions: [
+              InkWell(
+                onTap: () {
+                  Navigator.of(context).pushNamed(ClientProfileScreen.routeName);
+                },
+                child: Container(
+                  height: 35,
+                  width: 35,
+                  decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
+                  child: const Icon(Icons.check, color: Color(0xFF21356A), size: 20),
+                ),
+              ),
+              const SizedBox(width: 20),
+            ],
           ),
           body: Consumer<ClientProvider>(
             builder: (context, provider, child) {

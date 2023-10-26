@@ -1,7 +1,7 @@
 class BottomSheetSelectionModel {
   String title;
-  String icon;
+  String? icon;
   bool isSelected = false;
 
-  BottomSheetSelectionModel({required this.title, required this.icon, this.isSelected = false});
+  BottomSheetSelectionModel({required this.title, this.icon, this.isSelected = false});
 }

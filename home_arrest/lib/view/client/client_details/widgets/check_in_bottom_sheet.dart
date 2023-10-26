@@ -45,7 +45,7 @@ class CheckInBottomSheet extends StatelessWidget {
                       child: Row(
                         children: [
                           Image.asset(
-                            provider.chekInList[index].icon,
+                            provider.chekInList[index].icon!,
                             height: 30,
                             width: 30,
                           ),

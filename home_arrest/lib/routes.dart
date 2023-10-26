@@ -3,6 +3,7 @@ import 'view/client/client_dashboard/client_dashboard.dart';
 import 'view/client/client_details/client_details.dart';
 import 'view/client/client_history/client_history.dart';
 import 'view/client/client_location/client_location.dart';
+import 'view/client/client_profile/client_profile_screen.dart';
 import 'view/onboarding/sign_in/sign_in_screen.dart';
 import 'view/onboarding/sign_up/sign_up_screen.dart';
 import 'view/onboarding/splash/splash_screen.dart';
@@ -28,6 +29,8 @@ class Routes {
         return MaterialPageRoute(builder: (_) => const ClientHistoryScreen());
       case ClientLocationScreen.routeName:
         return MaterialPageRoute(builder: (_) => const ClientLocationScreen());
+      case ClientProfileScreen.routeName:
+        return MaterialPageRoute(builder: (_) => const ClientProfileScreen());
       case '/':
         return MaterialPageRoute(builder: (_) => Scaffold(body: Center(child: Text('No route defined for ${settings.name}'))));
       default:

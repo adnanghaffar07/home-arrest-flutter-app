@@ -23,6 +23,12 @@ class ClientProvider extends ChangeNotifier {
     BottomSheetSelectionModel(title: "Medium", icon: ImagesConstants.medium),
     BottomSheetSelectionModel(title: "High", icon: ImagesConstants.high),
   ];
+  final List<BottomSheetSelectionModel> _gendersList = [
+    BottomSheetSelectionModel(title: "Male"),
+    BottomSheetSelectionModel(title: "Female"),
+    BottomSheetSelectionModel(title: "None"),
+  ];
+
   final List<ClientModel> _clients = [
     ClientModel(name: "Allison Webber", associatedUsers: ["Adnan Ghaffar"]),
     ClientModel(name: "Bart Copper"),
@@ -42,6 +48,7 @@ class ClientProvider extends ChangeNotifier {
   List<BottomSheetSelectionModel> get clientTypes => _clientTypes;
   List<BottomSheetSelectionModel> get chekInList => _chekInList;
   List<BottomSheetSelectionModel> get monitorLevelList => _monitorLevelList;
+  List<BottomSheetSelectionModel> get gendersList => _gendersList;
   List<ClientModel> get clients => _clients;
   List<ClientHistoryModel> get clientHisotry => _clientHisotry;
 
@@ -70,5 +77,14 @@ class ClientProvider extends ChangeNotifier {
     _chekInList[index].isSelected = true;
     notifyListeners();
     return _chekInList[index].title;
+  }
+
+  String selectGender(int index) {
+    for (var element in _gendersList) {
+      element.isSelected = false;
+    }
+    _gendersList[index].isSelected = true;
+    notifyListeners();
+    return _gendersList[index].title;
   }
 }

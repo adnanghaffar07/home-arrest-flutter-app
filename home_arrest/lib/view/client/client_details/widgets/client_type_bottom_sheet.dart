@@ -45,7 +45,7 @@ class ClientTypeBottomSheet extends StatelessWidget {
                       child: Row(
                         children: [
                           Image.asset(
-                            provider.clientTypes[index].icon,
+                            provider.clientTypes[index].icon!,
                             height: 30,
                             width: 30,
                           ),
