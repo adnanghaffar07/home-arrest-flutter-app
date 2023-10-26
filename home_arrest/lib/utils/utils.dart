@@ -75,14 +75,14 @@ class Utils {
     }
   }
 
-  static void showToast(BuildContext context, String message, {bool isError = true}) {
+  static void showToast(BuildContext context, String message, {bool isError = true, Color? backgroundColor = Colors.white, Color? textColor = const Color(0xFF21356A)}) {
     if (message.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: Colors.white,
+          backgroundColor: backgroundColor,
           content: Text(
             message,
-            style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w500, color: const Color(0xFF21356A)),
+            style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w500, color: textColor),
           ),
           duration: const Duration(seconds: 2),
         ),

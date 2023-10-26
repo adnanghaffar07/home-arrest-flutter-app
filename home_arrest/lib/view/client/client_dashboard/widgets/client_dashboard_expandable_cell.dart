@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:home_arrest/constants/image_constants.dart';
-import 'package:home_arrest/view/client/client_history/client_history.dart';
 
 import '../../../../data/model/client.dart';
 import '../../../../utils/utils.dart';
+import '../../client_location/client_location.dart';
 
 class ClientDashboardExpandableCell extends StatefulWidget {
   final ClientModel clientModel;
@@ -58,7 +58,7 @@ class _ClientDashboardExpandableCellState extends State<ClientDashboardExpandabl
               (index) {
                 return InkWell(
                   onTap: () {
-                    Navigator.pushNamed(context, ClientHistoryScreen.routeName);
+                    Navigator.pushNamed(context, ClientLocationScreen.routeName);
                   },
                   child: SizedBox(
                     height: isExpanded ? 40 : 0,

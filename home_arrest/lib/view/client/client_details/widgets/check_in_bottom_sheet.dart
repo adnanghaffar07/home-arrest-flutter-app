@@ -14,17 +14,25 @@ class CheckInBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ClientProvider>(
       builder: (context, provider, child) {
-        return Stack(
-          children: [
-            Container(
-              height: 220,
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        return Container(
+          height: 220,
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 20, left: 20),
+                child: Text(
+                  'Check In',
+                  style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w700, color: const Color(0xFF21356A)),
+                ),
               ),
-              child: ListView.separated(
-                padding: const EdgeInsets.only(top: 30, bottom: 10),
+              ListView.separated(
+                padding: const EdgeInsets.only(top: 10),
                 itemCount: provider.chekInList.length,
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
@@ -66,8 +74,8 @@ class CheckInBottomSheet extends StatelessWidget {
                   return const SizedBox(width: double.infinity, height: 10);
                 },
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
     );

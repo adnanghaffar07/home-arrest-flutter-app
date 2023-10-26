@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:home_arrest/view/client/client_details/client_details.dart';
 
@@ -8,10 +10,18 @@ import '../../../global_widgets/text_fields/input_text_field.dart';
 import '../../../utils/utils.dart';
 import '../sign_up/sign_up_screen.dart';
 
-class SignInScreen extends StatelessWidget {
+class SignInScreen extends StatefulWidget {
   static const String routeName = '/sign_in';
   const SignInScreen({super.key});
 
+  @override
+  State<SignInScreen> createState() => _SignInScreenState();
+}
+
+class _SignInScreenState extends State<SignInScreen> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  bool isRememberMe = false;
   @override
   Widget build(BuildContext context) {
     return GlobalScaffold(
@@ -36,17 +46,19 @@ class SignInScreen extends StatelessWidget {
                   style: Utils.safeGoogleFont('Poppins', fontSize: 24, fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 40),
-                const InputTextField(
-                  decoration: InputDecoration(
+                InputTextField(
+                  controller: emailController,
+                  decoration: const InputDecoration(
                     hintText: 'User name /  Email address',
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
                   ),
                 ),
                 const SizedBox(height: 20),
-                const InputTextField(
+                InputTextField(
                   obscureText: true,
-                  decoration: InputDecoration(
+                  controller: passwordController,
+                  decoration: const InputDecoration(
                     hintText: 'Password',
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
@@ -57,8 +69,12 @@ class SignInScreen extends StatelessWidget {
                   children: [
                     Checkbox(
                       visualDensity: VisualDensity.compact,
-                      value: false,
-                      onChanged: (value) {},
+                      value: isRememberMe,
+                      onChanged: (value) {
+                        setState(() {
+                          isRememberMe = value!;
+                        });
+                      },
                     ),
                     Text(
                       'Remember me',
@@ -69,6 +85,13 @@ class SignInScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 CustomElevatedButton(
                   onTap: () {
+                    if (emailController.text.isEmpty || passwordController.text.isEmpty) {
+                      Utils.showToast(context, 'Please enter email and password', backgroundColor: const Color(0xFF21356A), textColor: Colors.white);
+                      return;
+                    } else if (emailController.text != 'adnan@codeautomation.ai') {
+                      Utils.showToast(context, 'Email Doesn\'t exist', backgroundColor: const Color(0xFF21356A), textColor: Colors.white);
+                      return;
+                    }
                     Navigator.pushNamed(context, ClientDetailsScreen.routeName);
                   },
                   title: Text(
