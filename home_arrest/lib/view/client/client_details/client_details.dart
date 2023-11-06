@@ -43,42 +43,42 @@ class ClientDetailsScreen extends StatelessWidget with AppbarMixin {
               actions: [
                 InkWell(
                   onTap: () {
-                    if (clientTypeController.text.isEmpty) {
-                      Utils.showToast(context, 'Please select client type');
-                      return;
-                    } else if (firstNameController.text.isEmpty) {
-                      Utils.showToast(context, 'Please enter first name');
-                      return;
-                    } else if (lastNameController.text.isEmpty) {
-                      Utils.showToast(context, 'Please enter last name');
-                      return;
-                    } else if (dobController.text.isEmpty) {
-                      Utils.showToast(context, 'Please select DOB');
-                      return;
-                    } else if (ssnController.text.isEmpty) {
-                      Utils.showToast(context, 'Please enter SSN');
-                      return;
-                    } else if (phoneNumberController.text.isEmpty) {
-                      Utils.showToast(context, 'Please enter phone number');
-                      return;
-                    } else if (emailAddressController.text.isEmpty) {
-                      Utils.showToast(context, 'Please enter email address');
-                      return;
-                    } else if (sentenceStartDateController.text.isEmpty) {
-                      Utils.showToast(context, 'Please select sentence start date');
-                      return;
-                    } else if (sentenceEndDateController.text.isEmpty) {
-                      Utils.showToast(context, 'Please select sentence end date');
-                      return;
-                    } else if (checkInsController.text.isEmpty) {
-                      Utils.showToast(context, 'Please select check ins');
-                      return;
-                    } else if (monitorLevelController.text.isEmpty) {
-                      Utils.showToast(context, 'Please select monitor level');
-                      return;
-                    } else {
+                    // if (clientTypeController.text.isEmpty) {
+                    //   Utils.showToast(context, 'Please select client type');
+                    //   return;
+                    // } else if (firstNameController.text.isEmpty) {
+                    //   Utils.showToast(context, 'Please enter first name');
+                    //   return;
+                    // } else if (lastNameController.text.isEmpty) {
+                    //   Utils.showToast(context, 'Please enter last name');
+                    //   return;
+                    // } else if (dobController.text.isEmpty) {
+                    //   Utils.showToast(context, 'Please select DOB');
+                    //   return;
+                    // } else if (ssnController.text.isEmpty) {
+                    //   Utils.showToast(context, 'Please enter SSN');
+                    //   return;
+                    // } else if (phoneNumberController.text.isEmpty) {
+                    //   Utils.showToast(context, 'Please enter phone number');
+                    //   return;
+                    // } else if (emailAddressController.text.isEmpty) {
+                    //   Utils.showToast(context, 'Please enter email address');
+                    //   return;
+                    // } else if (sentenceStartDateController.text.isEmpty) {
+                    //   Utils.showToast(context, 'Please select sentence start date');
+                    //   return;
+                    // } else if (sentenceEndDateController.text.isEmpty) {
+                    //   Utils.showToast(context, 'Please select sentence end date');
+                    //   return;
+                    // } else if (checkInsController.text.isEmpty) {
+                    //   Utils.showToast(context, 'Please select check ins');
+                    //   return;
+                    // } else if (monitorLevelController.text.isEmpty) {
+                    //   Utils.showToast(context, 'Please select monitor level');
+                    //   return;
+                    // } else {
                       Navigator.pushNamed(context, ClientDashboardScreen.routeName);
-                    }
+                    // }
                   },
                   child: Container(
                     height: 35,

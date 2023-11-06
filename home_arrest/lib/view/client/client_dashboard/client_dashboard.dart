@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:home_arrest/constants/image_constants.dart';
 import 'package:home_arrest/providers/client_provider.dart';
 import 'package:home_arrest/view/client/client_dashboard/widgets/client_dashboard_expandable_cell.dart';
 import 'package:provider/provider.dart';
 
+import '../../../global_widgets/drawer/drawer.dart';
 import '../../../global_widgets/global_scaffold/global_scaffold.dart';
 import '../../../mixins/appbar_mixin.dart';
 import '../../../utils/utils.dart';
@@ -16,17 +18,20 @@ class ClientDashboardScreen extends StatelessWidget with AppbarMixin {
   Widget build(BuildContext context) {
     return GlobalScaffold(
       child: Scaffold(
+          drawer: const HomeDrawer(),
           backgroundColor: Colors.transparent,
           appBar: baseStyleAppBar(
             title: 'Clients',
             backgroundColor: Colors.transparent,
             titleColor: const Color(0xFF0D0E2C),
-            leadingWidget: IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: Icon(Icons.adaptive.arrow_back, color: const Color(0xFF21356A)),
-            ),
+            leadingWidget: Builder(builder: (context) {
+              return IconButton(
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
+                },
+                icon: const Icon(Icons.menu, color: Color(0xFF21356A)),
+              );
+            }),
             actions: [
               InkWell(
                 onTap: () {
@@ -41,6 +46,10 @@ class ClientDashboardScreen extends StatelessWidget with AppbarMixin {
               ),
               const SizedBox(width: 20),
             ],
+          ),
+          floatingActionButton: Container(
+            margin: const EdgeInsets.only(bottom: 100, right: 20),
+            child: Image.asset(ImagesConstants.addClient, height: 50),
           ),
           body: Consumer<ClientProvider>(
             builder: (context, provider, child) {

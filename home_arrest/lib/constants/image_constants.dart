@@ -15,4 +15,13 @@ class ImagesConstants {
   static const String medium = 'assets/images/medium.png';
   static const String high = 'assets/images/high.png';
   static const String client = 'assets/images/client.png';
+  static const String logout = 'assets/images/logout.png';
+  static const String userProfile = 'assets/images/user_profile.png';
+  static const String info = 'assets/images/info.png';
+  static const String calendar = 'assets/images/calendar.png';
+  static const String home = 'assets/images/home.png';
+  static const String houseArrest = 'assets/images/house_arrest.png';
+  static const String bailBond = 'assets/images/bail_bond.png';
+  static const String alerts = 'assets/images/alerts.png';
+  static const String addClient = 'assets/images/add_client.png';
 }

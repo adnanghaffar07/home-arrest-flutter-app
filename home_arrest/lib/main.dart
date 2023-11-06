@@ -4,6 +4,7 @@ import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:home_arrest/providers/dashboard_provider.dart';
 import 'package:provider/provider.dart';
 import 'providers/client_provider.dart';
 import 'routes.dart';
@@ -21,10 +22,11 @@ void main() async {
   HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
-    DevicePreview(
-      enabled: !kReleaseMode,
-      builder: (context) => const AppProvider(),
-    ),
+    // DevicePreview(
+    //   enabled: !kReleaseMode,
+    //   builder: (context) => const AppProvider(),
+    // ),
+    const AppProvider(),
   );
 }
 
@@ -35,6 +37,7 @@ class AppProvider extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ClientProvider()),
+        ChangeNotifierProvider(create: (_) => DashboardProvider()),
       ],
       child: const MyApp(),
     );

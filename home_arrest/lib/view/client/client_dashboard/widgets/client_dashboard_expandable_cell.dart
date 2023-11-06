@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_arrest/constants/image_constants.dart';
+import 'package:home_arrest/view/client/client_details/client_details.dart';
+import 'package:home_arrest/view/client/client_profile/client_profile_screen.dart';
 
 import '../../../../data/model/client.dart';
 import '../../../../utils/utils.dart';

@@ -44,15 +44,6 @@ class _ClientLocationScreenState extends State<ClientLocationScreen> with Appbar
             },
             icon: Icon(Icons.adaptive.arrow_back, color: const Color(0xFF21356A)),
           ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.pushNamed(context, ClientHistoryScreen.routeName);
-              },
-              icon: const Icon(Icons.history, color: Color(0xFF21356A)),
-            ),
-            SizedBox(width: 10),
-          ],
         ),
         body: Consumer<ClientProvider>(
           builder: (context, provider, child) {
@@ -62,7 +53,15 @@ class _ClientLocationScreenState extends State<ClientLocationScreen> with Appbar
                 children: [
                   _borderedContainer(
                     title: 'Client Location',
-                    icon: const Icon(Icons.map_outlined, color: Color(0xFF21356A), size: 20),
+                    icon: InkWell(
+                      onTap: () {
+                        Navigator.pushNamed(context, ClientHistoryScreen.routeName);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(5),
+                        child: const Icon(Icons.map_outlined, color: Color(0xFF21356A), size: 20),
+                      ),
+                    ),
                     view: Container(
                       height: 300,
                       width: double.infinity,
@@ -72,7 +71,7 @@ class _ClientLocationScreenState extends State<ClientLocationScreen> with Appbar
                   ),
                   const SizedBox(height: 15),
                   Column(
-                    children: List.generate(4, (index) {
+                    children: List.generate(5, (index) {
                       switch (index) {
                         case 0:
                           return ClientLocationExpandableCell(
@@ -298,6 +297,25 @@ class _ClientLocationScreenState extends State<ClientLocationScreen> with Appbar
                               ],
                             ),
                           );
+                        case 4:
+                          return ClientLocationExpandableCell(
+                            title: 'Report',
+                            expandedHeight: 350,
+                            data: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _reportCell(title: 'Client Report', description: 'Shows Client check-ins, alerts and locations visited', icon: Icons.assessment_outlined),
+                                const SizedBox(height: 15),
+                                _reportCell(title: 'late check-ins', description: 'Show late check-ins (5 minutes late)', icon: Icons.warning_outlined),
+                                const SizedBox(height: 15),
+                                _reportCell(title: 'late sobriety check-ins', description: 'Show late sobriety check-ins (1 hour late)', icon: Icons.location_disabled_outlined),
+                                const SizedBox(height: 15),
+                                _reportCell(title: 'map history', description: 'Show location history on a map', icon: Icons.location_on_outlined),
+                                const SizedBox(height: 15),
+                                _reportCell(title: 'heatmap', description: 'show frequently visited locations on a map', icon: Icons.apartment),
+                              ],
+                            ),
+                          );
                         default:
                           return Container();
                       }
@@ -309,6 +327,34 @@ class _ClientLocationScreenState extends State<ClientLocationScreen> with Appbar
           },
         ),
       ),
+    );
+  }
+
+  Row _reportCell({String title = '', description = '', IconData? icon}) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          color: const Color(0xFF21356A),
+          size: 30,
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title.toUpperCase(),
+                style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w700, color: Colors.grey),
+              ),
+              Text(
+                description,
+                style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

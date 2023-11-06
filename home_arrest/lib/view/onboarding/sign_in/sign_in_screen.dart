@@ -8,6 +8,7 @@ import '../../../global_widgets/buttons/elevated_button.dart';
 import '../../../global_widgets/global_scaffold/global_scaffold.dart';
 import '../../../global_widgets/text_fields/input_text_field.dart';
 import '../../../utils/utils.dart';
+import '../../dashboard/dashboard_screen.dart';
 import '../sign_up/sign_up_screen.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -92,7 +93,7 @@ class _SignInScreenState extends State<SignInScreen> {
                       Utils.showToast(context, 'Email Doesn\'t exist', backgroundColor: const Color(0xFF21356A), textColor: Colors.white);
                       return;
                     }
-                    Navigator.pushNamed(context, ClientDetailsScreen.routeName);
+                    Navigator.pushNamed(context, DashboardScreen.routeName);
                   },
                   title: Text(
                     'Sign in',

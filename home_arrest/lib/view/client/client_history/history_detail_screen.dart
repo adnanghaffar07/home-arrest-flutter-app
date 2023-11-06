@@ -5,12 +5,11 @@ import 'package:provider/provider.dart';
 import '../../../global_widgets/global_scaffold/global_scaffold.dart';
 import '../../../mixins/appbar_mixin.dart';
 import '../../../utils/utils.dart';
-import 'history_detail_screen.dart';
 import 'widgets/client_history_cell.dart';
 
-class ClientHistoryScreen extends StatelessWidget with AppbarMixin {
-  static const String routeName = '/client-history';
-  const ClientHistoryScreen({super.key});
+class HistoryDetailScreen extends StatelessWidget with AppbarMixin {
+  static const String routeName = '/history-detail';
+  const HistoryDetailScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -59,24 +58,40 @@ class ClientHistoryScreen extends StatelessWidget with AppbarMixin {
                         const SizedBox(height: 15),
                         Container(height: 1, width: double.infinity, color: const Color(0xFFF2F2F2)),
                         const SizedBox(height: 15),
-                        ListView.separated(
-                          shrinkWrap: true,
+                        Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 25),
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: provider.clientHisotry.length,
-                          itemBuilder: (context, index) {
-                            return InkWell(
-                              onTap: () {
-                                Navigator.pushNamed(context, HistoryDetailScreen.routeName);
-                              },
-                              child: ClientHistoryCell(clientHistoryModel: provider.clientHisotry[index]),
-                            );
-                          },
-                          separatorBuilder: (context, index) {
-                            return const Divider(
-                              height: 50,
-                            );
-                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 30,
+                                    height: 30,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.greenAccent[100],
+                                    ),
+                                    child: Center(
+                                      child: Icon(Icons.schedule, color: Colors.green[900], size: 18),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 20),
+                                  Text(
+                                    '24 Mar, 11:34 PM',
+                                    style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w700, color: Colors.grey[700]),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                '30 N Gould St Ste 7596, Sheridan, WY, 82801.',
+                                style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black),
+                              ),
+                              SizedBox(height: 20),
+                              Image.asset('assets/images/map_new.png'),
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 15),
                       ],
