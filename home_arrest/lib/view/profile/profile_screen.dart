@@ -96,7 +96,7 @@ class ProfileScreen extends StatelessWidget with AppbarMixin {
                         ),
                         Text(
                           '30 N Gould St Ste 7596, Sheridan, WY, 82801.',
-                          style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black),
+                          style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black)
                         ),
                         const SizedBox(height: 10),
                         Text(

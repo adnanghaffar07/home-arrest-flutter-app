@@ -33,34 +33,37 @@ class InputSearchField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
-    InputBorder? border = theme.inputDecorationTheme.border?.copyWith(borderSide: BorderSide.none);
+    InputBorder? border = InputBorder.none;
 
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(10),
-      child: TextFormField(
-        controller: controller,
-        focusNode: focusNode,
-        initialValue: initialValue,
-        onChanged: onChanged,
-        onFieldSubmitted: onFieldSubmitted,
-        onEditingComplete: onEditingComplete,
-        onSaved: onSaved,
-        enabled: enabled,
-        textInputAction: textInputAction,
-        decoration: InputDecoration(
-          prefixIcon: Icon(
-            Icons.search,
-            size: 20,
-            color: theme.textTheme.bodySmall?.color,
-          ),
-          hintText: hintText,
-          filled: true,
-          fillColor: theme.colorScheme.surface,
-          border: border,
-          enabledBorder: border,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(50),
+          border: Border.all(color: Colors.grey),
         ),
-        keyboardType: keyboardType,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: TextFormField(
+          controller: controller,
+          focusNode: focusNode,
+          initialValue: initialValue,
+          onChanged: onChanged,
+          onFieldSubmitted: onFieldSubmitted,
+          onEditingComplete: onEditingComplete,
+          onSaved: onSaved,
+          enabled: enabled,
+          textInputAction: textInputAction,
+          cursorHeight: 15,
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.only(top: 15, left: 20),
+            suffixIcon: const Icon(Icons.search, size: 20, color: Color(0xFF0D0E2C)),
+            hintText: hintText,
+            border: border,
+            enabledBorder: border,
+          ),
+          keyboardType: keyboardType,
+        ),
       ),
     );
   }

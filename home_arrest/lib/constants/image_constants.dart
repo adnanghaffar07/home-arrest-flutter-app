@@ -24,4 +24,10 @@ class ImagesConstants {
   static const String bailBond = 'assets/images/bail_bond.png';
   static const String alerts = 'assets/images/alerts.png';
   static const String addClient = 'assets/images/add_client.png';
+
+  static const String call = 'assets/images/call.png';
+  static const String clipboard = 'assets/images/clipboard.png';
+  static const String document = 'assets/images/document.png';
+  static const String locate = 'assets/images/loacte.png';
+  static const String pointer = 'assets/images/pointer.png';
 }

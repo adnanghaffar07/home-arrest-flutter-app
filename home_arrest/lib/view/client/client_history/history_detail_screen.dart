@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../global_widgets/global_scaffold/global_scaffold.dart';
 import '../../../mixins/appbar_mixin.dart';
 import '../../../utils/utils.dart';
-import 'widgets/client_history_cell.dart';
+import '../client_info/client_info_screen.dart';
 
 class HistoryDetailScreen extends StatelessWidget with AppbarMixin {
   static const String routeName = '/history-detail';
@@ -42,17 +42,22 @@ class HistoryDetailScreen extends StatelessWidget with AppbarMixin {
                     child: Column(
                       children: [
                         const SizedBox(height: 15),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 25),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'History',
-                                style: Utils.safeGoogleFont('Poppins', fontSize: 16, fontWeight: FontWeight.w500, color: const Color(0xFF21356A)),
-                              ),
-                              const Icon(Icons.map_outlined, color: Color(0xFF21356A), size: 20),
-                            ],
+                        InkWell(
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=>  ClientInfoScreen()));
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 25),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'History',
+                                  style: Utils.safeGoogleFont('Poppins', fontSize: 16, fontWeight: FontWeight.w500, color: const Color(0xFF21356A)),
+                                ),
+                                const Icon(Icons.map_outlined, color: Color(0xFF21356A), size: 20),
+                              ],
+                            ),
                           ),
                         ),
                         const SizedBox(height: 15),
@@ -79,16 +84,16 @@ class HistoryDetailScreen extends StatelessWidget with AppbarMixin {
                                   const SizedBox(width: 20),
                                   Text(
                                     '24 Mar, 11:34 PM',
-                                    style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w700, color: Colors.grey[700]),
+                                    style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w700, color: Colors.grey[700])
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               Text(
                                 '30 N Gould St Ste 7596, Sheridan, WY, 82801.',
                                 style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black),
                               ),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               Image.asset('assets/images/map_new.png'),
                             ],
                           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_arrest/providers/dashboard_provider.dart';
+import 'package:home_arrest/view/alert/alerts_listing_screen.dart';
 import 'package:home_arrest/view/client/client_dashboard/client_dashboard.dart';
 import 'package:provider/provider.dart';
 
@@ -11,7 +12,7 @@ class DashboardScreen extends StatelessWidget {
     const ClientDashboardScreen(),
     Container(color: Colors.white),
     Container(color: Colors.white),
-    Container(color: Colors.white),
+    const AlertsListingScreen(),
   ];
 
   @override

@@ -13,16 +13,19 @@ class ClientProvider extends ChangeNotifier {
     BottomSheetSelectionModel(title: "Medical Client", icon: ImagesConstants.medicalClient),
     BottomSheetSelectionModel(title: "My Day N Court", icon: ImagesConstants.daynCourt)
   ];
+
   final List<BottomSheetSelectionModel> _chekInList = [
     BottomSheetSelectionModel(title: "None", icon: ImagesConstants.none),
     BottomSheetSelectionModel(title: "Present", icon: ImagesConstants.present),
     BottomSheetSelectionModel(title: "Random", icon: ImagesConstants.random),
   ];
+
   final List<BottomSheetSelectionModel> _monitorLevelList = [
     BottomSheetSelectionModel(title: "Low", icon: ImagesConstants.low),
     BottomSheetSelectionModel(title: "Medium", icon: ImagesConstants.medium),
     BottomSheetSelectionModel(title: "High", icon: ImagesConstants.high),
   ];
+
   final List<BottomSheetSelectionModel> _gendersList = [
     BottomSheetSelectionModel(title: "Male"),
     BottomSheetSelectionModel(title: "Female"),
@@ -37,6 +40,7 @@ class ClientProvider extends ChangeNotifier {
     ClientModel(name: "Jin White"),
     ClientModel(name: "Jeff Webber"),
   ];
+
   final List<ClientHistoryModel> _clientHisotry = [
     ClientHistoryModel(dateTime: "24 March, 12:00 PM", address: "1234 Main St, Los Angeles, CA 90012"),
     ClientHistoryModel(dateTime: "24 March, 12:00 PM", address: "30 N Gould St Ste 7596, Sheridan, WY,82801."),

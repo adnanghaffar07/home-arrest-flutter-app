@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'view/alert/alert_detail_screen.dart';
 import 'view/client/client_dashboard/client_dashboard.dart';
 import 'view/client/client_details/client_details.dart';
-import 'view/client/client_history/client_history.dart';
+import 'view/client/client_history/client_history_screen.dart';
 import 'view/client/client_history/history_detail_screen.dart';
 import 'view/client/client_location/client_location.dart';
+import 'view/client/client_locations/client_locations_screen.dart';
 import 'view/client/client_profile/client_profile_screen.dart';
+import 'view/client/search_client/search_client_screen.dart';
 import 'view/dashboard/dashboard_screen.dart';
 import 'view/onboarding/sign_in/sign_in_screen.dart';
 import 'view/onboarding/sign_up/sign_up_screen.dart';
@@ -40,8 +43,12 @@ class Routes {
         return MaterialPageRoute(builder: (_) => const ProfileScreen());
       case HistoryDetailScreen.routeName:
         return MaterialPageRoute(builder: (_) => const HistoryDetailScreen());
-      case '/':
-        return MaterialPageRoute(builder: (_) => Scaffold(body: Center(child: Text('No route defined for ${settings.name}'))));
+      case ClientLocationsScreen.routeName:
+        return MaterialPageRoute(builder: (_) => const ClientLocationsScreen());
+      case AlertDetailScreen.routeName:
+        return MaterialPageRoute(builder: (_) => const AlertDetailScreen());
+      case SearchClientScreen.routeName:
+        return MaterialPageRoute(builder: (_) => const SearchClientScreen());
       default:
         return MaterialPageRoute(builder: (_) => Scaffold(body: Center(child: Text('No route defined for ${settings.name}'))));
     }

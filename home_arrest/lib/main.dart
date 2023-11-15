@@ -1,9 +1,8 @@
 import 'dart:io';
 
-import 'package:device_preview/device_preview.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:home_arrest/providers/alerts_provider.dart';
 import 'package:home_arrest/providers/dashboard_provider.dart';
 import 'package:provider/provider.dart';
 import 'providers/client_provider.dart';
@@ -38,6 +37,7 @@ class AppProvider extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ClientProvider()),
         ChangeNotifierProvider(create: (_) => DashboardProvider()),
+        ChangeNotifierProvider(create: (_) => ALertsProvider()),
       ],
       child: const MyApp(),
     );
