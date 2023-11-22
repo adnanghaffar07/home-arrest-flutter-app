@@ -1,16 +1,10 @@
 import os
-import uuid
 from flask_cors import CORS
 from flask import Flask, request
 from models import Offender
-import db_operations
 import features
-# import google_maps_backend
 from authentication_system import *
-import db_operations as db
-import firebase_db_controller as db2
-
-# import email_forwarder as email_f
+import firebase_db_controller as db
 
 app = Flask(__name__)
 
@@ -40,7 +34,7 @@ def authentication(func):
             # print(token)
             payload = verify(token, app.config["SECRET_KEY"])  # Function to verify token.
             if payload:
-                flag, data = db2.login_user(
+                flag, data = db.login_user(
                     payload)  # if token verified, then it will use the signature containing user
                 # credentials and get user-details
                 if flag:
@@ -122,7 +116,7 @@ def sign_up():
     payload["location"] = {}
     payload["userName"] = payload.get("firstName", "") + " " + payload.get("lastName", "")
     # payload["profileStatus"] = True  # for public or private profile.
-    flag, status_code = db2.register_user(payload)
+    flag, status_code = db.register_user(payload)
     if flag:
         token = getToken(payload["email"], payload["password"], app.config["SECRET_KEY"])
         return {
@@ -146,7 +140,7 @@ def log_in():
     payload = request.get_json()
     print(payload)
 
-    flag, data = db2.login_user(payload)
+    flag, data = db.login_user(payload)
     if flag:
         token = getToken(payload["email"], payload["password"], app.config["SECRET_KEY"])
         return {
@@ -208,7 +202,7 @@ def add_new_offender():
     offender.dateOfEntry = str(datetime.now())
     offender.addedBy = add_new_offender.payload.get("email", "")
     client = offender.__dict__
-    if db2.add_offender_client(client):
+    if db.add_offender_client(client):
         return {
             "status": True,
             "message": "client added successfully",
@@ -229,7 +223,7 @@ def get_offenders():
     """
     # payload = request.args.to_dict()
     # db function to get all offenders array
-    offenders = db2.get_offenders_details_list()
+    offenders = db.get_offenders_details_list()
     return {
         "status": True,
         "totalResults": len(offenders),
@@ -247,7 +241,7 @@ def get_single_offenders():
     payload = request.args.to_dict()
     client_id = payload.get("id")
     # db function to get all offenders array
-    offender = db2.get_offender_details(client_id)
+    offender = db.get_offender_details(client_id)
     if offender:
         return {
             "status": True,
@@ -259,25 +253,45 @@ def get_single_offenders():
     }, 404
 
 
-@app.route("/user/update-password", methods=["POST"])
+# @app.route("/user/update-password", methods=["POST"])
+# @authentication
+# def update_password():
+#     payload = request.get_json()
+#     email = update_password.payload.get("email")
+#     # DB function to update new password.
+#     resp = db.update_user_password(email, payload.get("password", ""))
+#     if resp:
+#         token = getToken(email, payload.get("password"), app.config["SECRET_KEY"])
+#         return {
+#             "status": True,
+#             "details": resp,
+#             "token": token
+#         }
+#     else:
+#         return {
+#             "status": False,
+#             "details": resp
+#         }
+
+
+@app.route("/user/profile", methods=["GET"])
 @authentication
-def update_password():
-    payload = request.get_json()
-    email = update_password.payload.get("email")
-    # DB function to update new password.
-    resp = db.update_user_password(email, payload.get("password", ""))
-    if resp:
-        token = getToken(email, payload.get("password"), app.config["SECRET_KEY"])
+def get_profile_details():
+    email = get_profile_details.payload.get("email")
+    # db function to get profile details.
+    payload = db.get_profile_details(email)
+    if payload:
         return {
             "status": True,
-            "details": resp,
-            "token": token
+            "message": "user found",
+            "details": payload
         }
-    else:
-        return {
-            "status": False,
-            "details": resp
-        }
+    return {
+        "status": False,
+        "message": "something went wrong"
+    }, 500
+
+
 
 
 if __name__ == '__main__':

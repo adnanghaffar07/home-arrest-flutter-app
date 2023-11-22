@@ -1,6 +1,4 @@
-password = "jogxpoyjnyhxlkff"
-email_address = "testtravelend@gmail.com"
-connection_string = "mongodb+srv://trav:Alpha00$99@cluster0.btddoil.mongodb.net/"
+connection_string = ""
 databaseURL = "https://housearrest-d523c-default-rtdb.asia-southeast1.firebasedatabase.app/"
 firebase_config = {
     "apiKey": "AIzaSyBut7jW0ssAZIJP9-lSRGHbUSyBSNvWPTs",

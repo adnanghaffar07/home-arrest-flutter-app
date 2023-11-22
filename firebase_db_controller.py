@@ -103,3 +103,26 @@ def get_offender_details(client_id):
     except Exception as e:
         print(f"ERROR >>> {e}")
     return None
+
+
+def update_user_profile_details(payload, email):
+    try:
+        unique_id = features.get_unique_name_for_document(email)
+        user = database.child("Users").child(unique_id).update(payload)
+        print(user)
+        return payload
+    except Exception as e:
+        print(f"UPDATE DETAILS ERROR >>> {e}")
+    return None
+
+
+def get_profile_details(email):
+    try:
+        unique_id = features.get_unique_name_for_document(email)
+        user = database.child("Users").child(unique_id).get().val()
+        if user:
+            return dict(user)
+    except Exception as e:
+        print(f"PROFILE DETAILS ERROR >>> {e}")
+    return None
+
