@@ -6,3 +6,5 @@
 testing_lab.py
 /recordings
 db_operations.py
+/static
+cred.json

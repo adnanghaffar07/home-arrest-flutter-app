@@ -5,7 +5,6 @@ class Offender:
     """
         Offender client model.
     """
-    _id: str
     clientType: str
     firstName: str
     middleName: str
@@ -22,7 +21,30 @@ class Offender:
     location = {}
     agentAssigned: str
     dateOfEntry: str
+    uniqueId: str
+    active: bool
     addedBy: str
+    scoreCard = {
+        "monitoringPeriod": "20-03-2023",
+        "totalCheckins": 0,
+        "outstanding": 0,
+        "late": 0,
+        "voluntaryCheckins": 0
+    }
+    recentAlerts = {
+        "monitoringPeriod": "20-03-2023",
+        "totalCheckins": 0,
+        "outstanding": 0,
+        "late": 0,
+        "voluntaryCheckins": 0
+    }
+    courtAppearances = {
+        "monitoringPeriod": "20-03-2023",
+        "totalCheckins": 0,
+        "outstanding": 0,
+        "late": 0,
+        "voluntaryCheckins": 0
+    }
 
 
 class User:
@@ -37,3 +59,4 @@ class User:
     password: str
     role: int           # 1- Super User     2- Super Admin      3- Admin
     dateOfRegistration = datetime.datetime.now()
+    clientsAssigned: list

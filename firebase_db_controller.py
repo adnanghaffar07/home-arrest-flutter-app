@@ -1,10 +1,15 @@
 import pyrebase
 from credentials import firebase_config
 import features
+import firebase_admin
+from firebase_admin import credentials, auth
+
+cred = credentials.Certificate("cred.json")
+firebase_admin.initialize_app(cred)
 
 firebase = pyrebase.initialize_app(firebase_config)
 database = firebase.database()
-auth = firebase.auth()
+auth2 = firebase.auth()
 
 
 def register_user(payload):
@@ -15,7 +20,7 @@ def register_user(payload):
     email = payload.get("email", "")
     password = payload.get("password", "")
     try:
-        user = auth.create_user_with_email_and_password(email, password)
+        user = auth2.create_user_with_email_and_password(email, password)
         print(">>> REGISTRATION SUCCESSFUL")
         # Get name for document
         unique_id = features.get_unique_name_for_document(email)
@@ -47,7 +52,7 @@ def login_user(payload):
     email = payload.get("email")
     password = payload.get("password")
     try:
-        user = auth.sign_in_with_email_and_password(email, password)
+        user = auth2.sign_in_with_email_and_password(email, password)
         unique_id = features.get_unique_name_for_document(email)
         details = dict(database.child("Users").child(unique_id).get().val())
         return True, details
@@ -58,7 +63,7 @@ def login_user(payload):
 
 def add_offender_client(client):
     try:
-        unique_id = client.get("_id", "")
+        unique_id = client.get("uniqueId", "")
         if if_entry_exists("Offenders", unique_id):
             return False
         details = dict(database.child("Offenders").child(unique_id).set(client))
@@ -89,6 +94,10 @@ def get_offenders_details_list():
         payload = []
         if details:
             for key, value in details.items():
+                user_id = details.get(key).get("agentAssigned")
+                # function to get agent details.
+                details[key]["agentDetails"] = get_profile_details(features.get_unique_name_for_document(user_id))
+                del details[key]["agentDetails"]["password"]  # for privacy deleting password field from payload.
                 payload.append(details[key])
             return payload
     except Exception as e:
@@ -126,3 +135,45 @@ def get_profile_details(email):
         print(f"PROFILE DETAILS ERROR >>> {e}")
     return None
 
+
+def update_offender_client_info(payload):
+    try:
+        unique_id = payload.get("uniqueId", "")
+        print(unique_id)
+        if if_entry_exists("Offenders", unique_id):
+            user = database.child("Offenders").child(unique_id).update(payload)
+            # print(user)
+            return user
+    except Exception as e:
+        print(f"ERROR >>> {e}")
+    return None
+
+
+def get_admin_by_role_id(role_id):
+    try:
+        users = database.child("Users").get().val()
+        if users:
+            payload = []
+            users = dict(users)
+            for key, value in users.items():
+                if users[key]["role"] == role_id:
+                    del users[key]["password"]
+                    payload.append(users[key])
+            return payload
+    except Exception as e:
+        print(f"ERROR >>> {e}")
+    return None
+
+
+def update_user_password(email, old_password, new_password):
+    user = auth.get_user_by_email(email)
+    uid = user.uid
+    try:
+        # Update the user's password using the Firebase Admin SDK
+        auth.update_user(uid, password=new_password)
+        print(f"Password changed successfully for user {uid}.")
+        user = database.child("Users").child(features.get_unique_name_for_document(email)).update({"password": new_password})
+        return dict(user)
+    except Exception as e:
+        print(f"Error changing password: {e}")
+        return False

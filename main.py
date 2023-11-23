@@ -113,9 +113,9 @@ def sign_up():
     """
     payload = request.get_json()
     # register_user is array declared globally to save users for demo.
-    payload["location"] = {}
+    payload["location"] = payload.get("location", {})
     payload["userName"] = payload.get("firstName", "") + " " + payload.get("lastName", "")
-    # payload["profileStatus"] = True  # for public or private profile.
+    payload["clientsAssigned"] = []
     flag, status_code = db.register_user(payload)
     if flag:
         token = getToken(payload["email"], payload["password"], app.config["SECRET_KEY"])
@@ -159,6 +159,9 @@ def log_in():
 @app.route("/user/update-profile", methods=["POST"])
 @authentication
 def update_profile():
+    """
+    This end-point will update user profile details.
+    """
     payload = request.get_json()
     email = update_profile.payload.get("email")
     # DB function to update user profile details.
@@ -183,7 +186,7 @@ def add_new_offender():
     """
     payload = request.get_json()
     offender = Offender()
-    offender._id = features.get_unique_name_for_document(payload.get("emailAddress", ""))
+    offender.uniqueId = features.get_unique_name_for_document(payload.get("emailAddress", ""))
     offender.clientType = payload.get("clientType")
     offender.firstName = payload.get("firstName")
     offender.middleName = payload.get("middleName")
@@ -199,8 +202,12 @@ def add_new_offender():
     offender.monitorLevel = payload.get("monitorLevel")
     offender.location = payload.get("location", {})
     offender.agentAssigned = payload.get("agentAssigned", "")
+    offender.active = True
     offender.dateOfEntry = str(datetime.now())
     offender.addedBy = add_new_offender.payload.get("email", "")
+    offender.scoreCard = payload.get("scoreCard", offender.scoreCard)
+    offender.recentAlerts = payload.get("recentAlerts", offender.recentAlerts)
+    offender.courtAppearances = payload.get("courtAppearances", offender.courtAppearances)
     client = offender.__dict__
     if db.add_offender_client(client):
         return {
@@ -253,30 +260,53 @@ def get_single_offenders():
     }, 404
 
 
-# @app.route("/user/update-password", methods=["POST"])
-# @authentication
-# def update_password():
-#     payload = request.get_json()
-#     email = update_password.payload.get("email")
-#     # DB function to update new password.
-#     resp = db.update_user_password(email, payload.get("password", ""))
-#     if resp:
-#         token = getToken(email, payload.get("password"), app.config["SECRET_KEY"])
-#         return {
-#             "status": True,
-#             "details": resp,
-#             "token": token
-#         }
-#     else:
-#         return {
-#             "status": False,
-#             "details": resp
-#         }
+@app.route("/clients/offender/update-offender-info", methods=["POST"])
+@authentication
+def update_offender_info():
+    """
+        End-Point for updating Offender information.
+    """
+    payload = request.get_json()
+    # DB Function to update details.
+    data = db.update_offender_client_info(payload)
+    if data:
+        return {
+            "status": True,
+            "message": "Details updated successfully"
+        }
+    else:
+        return {
+            "status": False,
+            "message": "Something went wrong"
+        }, 500
+
+
+@app.route("/user/update-password", methods=["POST"])
+@authentication
+def update_password():
+    payload = request.get_json()
+    email = update_password.payload.get("email")
+    # DB function to update new password.
+    resp = db.update_user_password(email, payload.get("oldPassword", ""), payload.get("newPassword"))
+    if resp:
+        token = getToken(email, payload.get("newPassword"), app.config["SECRET_KEY"])
+        return {
+            "status": True,
+            "token": token
+        }
+    else:
+        return {
+            "status": False,
+            "message": "Something went wrong"
+        }
 
 
 @app.route("/user/profile", methods=["GET"])
 @authentication
 def get_profile_details():
+    """
+    Returns the details of logged-in user profile.
+    """
     email = get_profile_details.payload.get("email")
     # db function to get profile details.
     payload = db.get_profile_details(email)
@@ -292,6 +322,24 @@ def get_profile_details():
     }, 500
 
 
+@app.route("/user/super-admin-list", methods=["GET"])
+@authentication
+def get_super_admin_list():
+    """
+    This function will return list of users with role=2.
+    """
+    # DB function to get list of users with role=2
+    users = db.get_admin_by_role_id(2)
+    if users:
+        return {
+            "status": True,
+            "details": users
+        }
+    else:
+        return {
+            "status": False,
+            "message": "something went wrong"
+        }, 500
 
 
 if __name__ == '__main__':
