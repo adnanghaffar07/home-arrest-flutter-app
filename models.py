@@ -10,12 +10,12 @@ class Offender:
     middleName: str
     lastName: str
     maidenName: str
-    dateOfBirth: datetime.datetime
+    dateOfBirth: str
     ssn: str
     phoneNumber: str
     emailAddress: str
-    sentenceStartDate: datetime.datetime
-    sentenceEndDate: datetime.datetime
+    sentenceStartDate: str
+    sentenceEndDate: str
     checkIn: str
     monitorLevel: str
     location = {}
@@ -48,7 +48,10 @@ class Offender:
 
 
 class User:
-    _id: str
+    """
+    User Model
+    """
+    uniqueId: str
     firstName: str
     lastName: str
     userName: str

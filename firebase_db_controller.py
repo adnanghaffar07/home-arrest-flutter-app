@@ -4,12 +4,20 @@ import features
 import firebase_admin
 from firebase_admin import credentials, auth
 
-cred = credentials.Certificate("cred.json")
-firebase_admin.initialize_app(cred)
+# firebase_admin library
+# ************************************************************************************************************
+cred = credentials.Certificate("cred.json")  # loading JSON credentials file.
+firebase_admin.initialize_app(cred)  # initialization firebase application.
+# ************************************************************************************************************
 
+# pyrebase library.
+# ************************************************************************************************************
 firebase = pyrebase.initialize_app(firebase_config)
 database = firebase.database()
 auth2 = firebase.auth()
+
+
+# ************************************************************************************************************
 
 
 def register_user(payload):
@@ -52,7 +60,7 @@ def login_user(payload):
     email = payload.get("email")
     password = payload.get("password")
     try:
-        user = auth2.sign_in_with_email_and_password(email, password)
+        auth2.sign_in_with_email_and_password(email, password)
         unique_id = features.get_unique_name_for_document(email)
         details = dict(database.child("Users").child(unique_id).get().val())
         return True, details
@@ -108,6 +116,10 @@ def get_offender_details(client_id):
     try:
         client = database.child("Offenders").child(client_id).get().val()
         if client:
+            client = dict(client)
+            client["agentDetails"] = get_profile_details(
+                features.get_unique_name_for_document(client.get("agentAssigned", "")))
+            del client["agentDetails"]["password"]
             return dict(client)
     except Exception as e:
         print(f"ERROR >>> {e}")
@@ -165,15 +177,44 @@ def get_admin_by_role_id(role_id):
     return None
 
 
-def update_user_password(email, old_password, new_password):
+def update_user_password(email, new_password):
     user = auth.get_user_by_email(email)
     uid = user.uid
     try:
         # Update the user's password using the Firebase Admin SDK
         auth.update_user(uid, password=new_password)
         print(f"Password changed successfully for user {uid}.")
-        user = database.child("Users").child(features.get_unique_name_for_document(email)).update({"password": new_password})
+        user = database.child("Users").child(features.get_unique_name_for_document(email)).update(
+            {"password": new_password})
         return dict(user)
     except Exception as e:
         print(f"Error changing password: {e}")
         return False
+
+
+def update_admin_role(admin_id, role_status):
+    try:
+        user = database.child("Users").child(admin_id).update({"role": role_status})
+        if user:
+            return True
+        else:
+            return False
+    except Exception as e:
+        print(f"ERROR >>> {e}")
+    return False
+
+
+def get_active_offenders():
+    try:
+        clients = database.child("Offenders").get().val()
+        if clients:
+            offenders = []
+            clients = dict(clients)
+            for key, value in clients.items():
+                if clients[key].get("active"):
+                    print(f"ACTIVE CLIENT >>> {clients[key]['emailAddress']}")
+                    offenders.append(clients[key])
+            return offenders
+    except Exception as e:
+        print(f"ERROR ACTIVE OFFENDERS >>> {e}")
+    return None

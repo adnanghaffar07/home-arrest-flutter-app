@@ -1,4 +1,3 @@
-import os
 from flask_cors import CORS
 from flask import Flask, request
 from models import Offender
@@ -19,7 +18,6 @@ def authentication(func):
     :param func:
     :return:
     """
-
     def authenticate(*args, **kwargs):
         try:
             try:
@@ -286,8 +284,15 @@ def update_offender_info():
 def update_password():
     payload = request.get_json()
     email = update_password.payload.get("email")
+    old_password = payload.get("oldPassword")
+    compare_pass = update_password.payload.get("password")
+    if old_password != compare_pass:
+        return {
+            "status": False,
+            "message": "Password did not match."
+        }, 401
     # DB function to update new password.
-    resp = db.update_user_password(email, payload.get("oldPassword", ""), payload.get("newPassword"))
+    resp = db.update_user_password(email, payload.get("newPassword"))
     if resp:
         token = getToken(email, payload.get("newPassword"), app.config["SECRET_KEY"])
         return {
@@ -329,17 +334,85 @@ def get_super_admin_list():
     This function will return list of users with role=2.
     """
     # DB function to get list of users with role=2
-    users = db.get_admin_by_role_id(2)
-    if users:
+    try:
+        users = db.get_admin_by_role_id(2)
+        print(users)
         return {
             "status": True,
             "details": users
         }
-    else:
+    except Exception as e:
+        print(f"ERROR ADMIN LIST >>> {e}")
+    return {
+        "status": False,
+        "message": "Something went wrong"
+    }, 500
+
+
+@app.route("/user/admin-list", methods=["GET"])
+@authentication
+def get_admin_list():
+    """
+    This function will return list of users with role=3.
+    """
+    # DB function to get list of users with role=2
+    try:
+        users = db.get_admin_by_role_id(3)
+        print(users)
+        return {
+            "status": True,
+            "details": users
+        }
+    except Exception as e:
+        print(f"ERROR ADMIN LIST >>> {e}")
+    return {
+        "status": False,
+        "message": "Something went wrong"
+    }, 500
+
+
+@app.route("/user/change-role", methods=["GET"])
+@authentication
+def change_role():
+    admin_id = request.args.to_dict().get("adminId")
+    role_status = request.args.to_dict().get("roleStatus")
+    permission_access = change_role.payload.get("role")
+    if permission_access != 1:
         return {
             "status": False,
-            "message": "something went wrong"
-        }, 500
+            "message": "Permission Denied"
+        }, 401
+    else:
+        # DB function to update role status of provided admin ID.
+        if db.update_admin_role(admin_id, role_status):
+            return {
+                "status": True,
+                "message": "Status updated successfully..."
+            }
+    return {
+        "status": False,
+        "message": "something went wrong..."
+    }, 500
+
+
+@app.route("/clients/offenders/active", methods=["GET"])
+@authentication
+def get_active_offenders():
+    """
+    Function will return offenders with active status
+    """
+    try:
+        offenders = db.get_active_offenders()
+        return {
+            "status": True,
+            "details": offenders
+        }
+    except Exception as e:
+        print(f"ERROR >>> {e}")
+    return {
+        "status": False,
+        "message": "Something went wrong..."
+    }, 500
 
 
 if __name__ == '__main__':
