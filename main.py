@@ -1,15 +1,20 @@
+import os
 from flask_cors import CORS
 from flask import Flask, request
-from models import Offender
 import features
 from authentication_system import *
 import firebase_db_controller as db
 
+# from flask_smorest import Blueprint
+
 app = Flask(__name__)
+
 
 app.config["SECRET_KEY"] = '0F53127e42354ze38D4024a9e2789a24'  # generated secret key for token generation
 
 cors = CORS(app)
+
+# blp = Blueprint("validation", __name__, description="Model Validations")
 
 
 def authentication(func):
@@ -18,6 +23,7 @@ def authentication(func):
     :param func:
     :return:
     """
+
     def authenticate(*args, **kwargs):
         try:
             try:
@@ -114,14 +120,21 @@ def sign_up():
     payload["location"] = payload.get("location", {})
     payload["userName"] = payload.get("firstName", "") + " " + payload.get("lastName", "")
     payload["clientsAssigned"] = []
+    payload["profilePic"] = ""
+    if len(payload.get("password", "")) < 6:
+        return {
+            "status": False,
+            "message": "Password is too short. Characters must be >=6."
+        }, 500
     flag, status_code = db.register_user(payload)
+
     if flag:
         token = getToken(payload["email"], payload["password"], app.config["SECRET_KEY"])
         return {
             "message": "Account Created Successfully",
             "status": True,
             "token": token
-        }
+        }, 201
     return {
         "message": "User already exists with same email or phone number",
         "status": False,
@@ -129,6 +142,7 @@ def sign_up():
 
 
 @app.route("/log-in", methods=["POST"])
+# @blp.arguments(Login)
 def log_in():
     """
     The function will receive user credentials and then return response.
@@ -137,7 +151,11 @@ def log_in():
     """
     payload = request.get_json()
     print(payload)
-
+    if len(payload.get("password", "")) < 6:
+        return {
+            "status": False,
+            "message": "Password is too short. Characters must be >=6."
+        }, 500
     flag, data = db.login_user(payload)
     if flag:
         token = getToken(payload["email"], payload["password"], app.config["SECRET_KEY"])
@@ -176,112 +194,14 @@ def update_profile():
         }
 
 
-@app.route("/clients/new-offender", methods=["POST"])
-@authentication
-def add_new_offender():
-    """
-    this end-point will add new offender in the database.
-    """
-    payload = request.get_json()
-    offender = Offender()
-    offender.uniqueId = features.get_unique_name_for_document(payload.get("emailAddress", ""))
-    offender.clientType = payload.get("clientType")
-    offender.firstName = payload.get("firstName")
-    offender.middleName = payload.get("middleName")
-    offender.lastName = payload.get("lastName")
-    offender.maidenName = payload.get("maidenName")
-    offender.dateOfBirth = payload.get("dateOfBirth")
-    offender.ssn = payload.get("ssn")
-    offender.phoneNumber = payload.get("phoneNumber")
-    offender.emailAddress = payload.get("emailAddress")
-    offender.sentenceStartDate = payload.get("sentenceStartDate")
-    offender.sentenceEndDate = payload.get("sentenceEndDate")
-    offender.checkIn = payload.get("checkIn")
-    offender.monitorLevel = payload.get("monitorLevel")
-    offender.location = payload.get("location", {})
-    offender.agentAssigned = payload.get("agentAssigned", "")
-    offender.active = True
-    offender.dateOfEntry = str(datetime.now())
-    offender.addedBy = add_new_offender.payload.get("email", "")
-    offender.scoreCard = payload.get("scoreCard", offender.scoreCard)
-    offender.recentAlerts = payload.get("recentAlerts", offender.recentAlerts)
-    offender.courtAppearances = payload.get("courtAppearances", offender.courtAppearances)
-    client = offender.__dict__
-    if db.add_offender_client(client):
-        return {
-            "status": True,
-            "message": "client added successfully",
-            "details": client
-        }
-    else:
-        return {
-            "status": False,
-            "message": "Something went wrong"
-        }, 500
-
-
-@app.route("/clients/get-offenders", methods=["GET"])
-@authentication
-def get_offenders():
-    """
-    return the list of all the offenders added in the database.
-    """
-    # payload = request.args.to_dict()
-    # db function to get all offenders array
-    offenders = db.get_offenders_details_list()
-    return {
-        "status": True,
-        "totalResults": len(offenders),
-        "details": offenders
-    }
-
-
-@app.route("/clients/offenders/offender", methods=["GET"])
-@authentication
-def get_single_offenders():
-    """
-    The end-point will receive the id of the offender's profile and then
-    return the details of the offender WRT id.
-    """
-    payload = request.args.to_dict()
-    client_id = payload.get("id")
-    # db function to get all offenders array
-    offender = db.get_offender_details(client_id)
-    if offender:
-        return {
-            "status": True,
-            "details": offender
-        }
-    return {
-        "status": False,
-        "message": "Not Found"
-    }, 404
-
-
-@app.route("/clients/offender/update-offender-info", methods=["POST"])
-@authentication
-def update_offender_info():
-    """
-        End-Point for updating Offender information.
-    """
-    payload = request.get_json()
-    # DB Function to update details.
-    data = db.update_offender_client_info(payload)
-    if data:
-        return {
-            "status": True,
-            "message": "Details updated successfully"
-        }
-    else:
-        return {
-            "status": False,
-            "message": "Something went wrong"
-        }, 500
-
-
 @app.route("/user/update-password", methods=["POST"])
 @authentication
 def update_password():
+    """
+    End-point for updating password. The function will take two parameters i.e., old password and new password.
+    Then after checking old password with the password that the token provided, if valid will update new password.
+    Otherwise, it will throw an error.
+    """
     payload = request.get_json()
     email = update_password.payload.get("email")
     old_password = payload.get("oldPassword")
@@ -374,6 +294,12 @@ def get_admin_list():
 @app.route("/user/change-role", methods=["GET"])
 @authentication
 def change_role():
+    """
+    End-Point to change the role of the Admin.
+    1- Super User
+    2- Super Admin
+    3- Admin
+    """
     admin_id = request.args.to_dict().get("adminId")
     role_status = request.args.to_dict().get("roleStatus")
     permission_access = change_role.payload.get("role")
@@ -395,6 +321,166 @@ def change_role():
     }, 500
 
 
+@app.route("/user/profile/profile-pic", methods=["POST", "GET"])
+@authentication
+def upload_profile_pic():
+    """
+    This end-point is for uploading profile pic. Function will receive profile pic in the content-type of
+    multipart/form-data.
+    :return:
+    """
+    user_name = upload_profile_pic.payload.get("email")
+    role_code = upload_profile_pic.payload.get("role")
+    # Checking for Logged-in user role. Assigning folder according to user's type.
+    if role_code == 1:
+        user_type = "su"
+    elif role_code == 2:
+        user_type = "sa"
+    elif role_code == 3:
+        user_type = "admin"
+    else:  # Condition will return if user role is not in between 1-3.
+        return {
+            "status": False,
+            "message": "The user that is logged in contains the type which is not registered. kindly check what's wrong."
+        }, 401
+    try:
+        if 'image' in request.files:
+            image_path = f"static/profiles/{user_type}/{user_name}/profile-pic"
+            if not os.path.exists(image_path):
+                os.makedirs(image_path)
+            file = request.files['image']
+            filename = file.filename
+            rename_file = features.file_rename(filename.split(".")[1], user_name)  # function for renaming file.
+            print(rename_file)
+            file.save(os.path.join(image_path, rename_file))
+            # DB Function to update user-profile and add image path in profile
+            if db.add_user_profile_pic(user_name, f"{image_path}/{rename_file}", "profilePic"):
+                return {
+                    "status": True,
+                    "message": "profile pic saved successfully."
+                }
+            else:
+                return {
+                    "status": False,
+                    "message": "Error Occurred"
+                }, 500
+        return {
+            "status": False,
+            "message": "image not found"
+        }, 404
+    except Exception as e:
+        print(f"ERROR >>> {e}")
+        return {
+            "status": False,
+            "message": "Error Occurred"
+        }, 500
+
+
+
+@app.route("/clients/new-offender", methods=["POST"])
+@authentication
+def add_new_offender():
+    """
+    this end-point will add new offender in the database.
+    """
+    payload = request.get_json()
+    offender = Offender()
+    offender.uniqueId = features.get_unique_name_for_document(payload.get("emailAddress", ""))
+    offender.clientType = payload.get("clientType")
+    offender.firstName = payload.get("firstName")
+    offender.middleName = payload.get("middleName")
+    offender.lastName = payload.get("lastName")
+    offender.maidenName = payload.get("maidenName")
+    offender.dateOfBirth = payload.get("dateOfBirth")
+    offender.ssn = payload.get("ssn")
+    offender.phoneNumber = payload.get("phoneNumber")
+    offender.emailAddress = payload.get("emailAddress")
+    offender.sentenceStartDate = payload.get("sentenceStartDate")
+    offender.sentenceEndDate = payload.get("sentenceEndDate")
+    offender.checkIn = payload.get("checkIn")
+    offender.monitorLevel = payload.get("monitorLevel")
+    offender.profilePic = ""
+    offender.location = payload.get("location", {})
+    offender.agentAssigned = payload.get("agentAssigned", "")
+    offender.active = payload.get("active", "active")
+    offender.dateOfEntry = str(datetime.now())
+    offender.addedBy = add_new_offender.payload.get("email", "")
+    offender.scoreCard = payload.get("scoreCard", offender.scoreCard)
+    offender.recentAlerts = payload.get("recentAlerts", offender.recentAlerts)
+    offender.courtAppearances = payload.get("courtAppearances", offender.courtAppearances)
+    client = offender.__dict__
+    if db.add_offender_client(client):
+        return {
+            "status": True,
+            "message": "client added successfully",
+            "details": client
+        }, 201
+    else:
+        return {
+            "status": False,
+            "message": "Something went wrong"
+        }, 500
+
+
+@app.route("/clients/get-offenders", methods=["GET"])
+@authentication
+def get_offenders():
+    """
+    return the list of all the offenders added in the database.
+    """
+    # payload = request.args.to_dict()
+    # db function to get all offenders array
+    offenders = db.get_offenders_details_list()
+    return {
+        "status": True,
+        "totalResults": len(offenders),
+        "details": offenders
+    }
+
+
+@app.route("/clients/offenders/offender", methods=["GET"])
+@authentication
+def get_single_offenders():
+    """
+    The end-point will receive the id of the offender's profile and then
+    return the details of the offender WRT id.
+    """
+    payload = request.args.to_dict()
+    client_id = payload.get("id")
+    # db function to get all offenders array
+    offender = db.get_offender_details(client_id)
+    if offender:
+        return {
+            "status": True,
+            "details": offender
+        }
+    return {
+        "status": False,
+        "message": "Not Found"
+    }, 404
+
+
+@app.route("/clients/offender/update-offender-info", methods=["POST"])
+@authentication
+def update_offender_info():
+    """
+        End-Point for updating Offender information.
+    """
+    payload = request.get_json()
+    # DB Function to update details.
+    data = db.update_offender_client_info(payload)
+    if data:
+        return {
+            "status": True,
+            "message": "Details updated successfully"
+        }
+    else:
+        return {
+            "status": False,
+            "message": "Something went wrong"
+        }, 500
+
+
 @app.route("/clients/offenders/active", methods=["GET"])
 @authentication
 def get_active_offenders():
@@ -402,10 +488,32 @@ def get_active_offenders():
     Function will return offenders with active status
     """
     try:
-        offenders = db.get_active_offenders()
+        offenders = db.get_offenders_by_status("active")
         return {
             "status": True,
-            "details": offenders
+            "details": offenders,
+            "totalResults": len(offenders)
+        }
+    except Exception as e:
+        print(f"ERROR >>> {e}")
+    return {
+        "status": False,
+        "message": "Something went wrong..."
+    }, 500
+
+
+@app.route("/clients/offenders/pending", methods=["GET"])
+@authentication
+def get_pending_offenders():
+    """
+    Function will return offenders with active status
+    """
+    try:
+        offenders = db.get_offenders_by_status("pending")
+        return {
+            "status": True,
+            "details": offenders,
+            "totalResults": len(offenders)
         }
     except Exception as e:
         print(f"ERROR >>> {e}")

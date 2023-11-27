@@ -70,6 +70,9 @@ def login_user(payload):
 
 
 def add_offender_client(client):
+    """
+    function to create new offender.
+    """
     try:
         unique_id = client.get("uniqueId", "")
         if if_entry_exists("Offenders", unique_id):
@@ -96,6 +99,10 @@ def if_entry_exists(collection, unique_id):
 
 
 def get_offenders_details_list():
+    """
+    Function will return list of offenders. The list contains objects which contains the complete
+    information of offender.
+    """
     try:
         details = database.child("Offenders").get().val()
         details = dict(details)
@@ -110,9 +117,14 @@ def get_offenders_details_list():
             return payload
     except Exception as e:
         print(e)
+    return None
 
 
 def get_offender_details(client_id):
+    """
+    This function will take client_id as parameter and returns the
+    offender information with the provided client id
+    """
     try:
         client = database.child("Offenders").child(client_id).get().val()
         if client:
@@ -127,6 +139,10 @@ def get_offender_details(client_id):
 
 
 def update_user_profile_details(payload, email):
+    """
+    This function will take two parameters i.e., payload and email address of the user.
+    This function will update user profile details.
+    """
     try:
         unique_id = features.get_unique_name_for_document(email)
         user = database.child("Users").child(unique_id).update(payload)
@@ -138,6 +154,11 @@ def update_user_profile_details(payload, email):
 
 
 def get_profile_details(email):
+    """
+    This function will take email address as parameter, then after convert it into unique id
+    by which user is stored in the database and return the details of the user with provided
+    unique id.
+    """
     try:
         unique_id = features.get_unique_name_for_document(email)
         user = database.child("Users").child(unique_id).get().val()
@@ -149,6 +170,9 @@ def get_profile_details(email):
 
 
 def update_offender_client_info(payload):
+    """
+    This function will take offender's updated details and update it in the database.
+    """
     try:
         unique_id = payload.get("uniqueId", "")
         print(unique_id)
@@ -162,6 +186,12 @@ def update_offender_client_info(payload):
 
 
 def get_admin_by_role_id(role_id):
+    """
+    This function will return the users registered in the database WRT role id.
+    1- Super User
+    2- Super Admin
+    3- Admin
+    """
     try:
         users = database.child("Users").get().val()
         if users:
@@ -178,6 +208,11 @@ def get_admin_by_role_id(role_id):
 
 
 def update_user_password(email, new_password):
+    """
+    In this specific function, firebase_admin library is used for updating password.
+    Password update feature with pyrebase library is a bit complex so firebase_admin is
+    being used to update the password.
+    """
     user = auth.get_user_by_email(email)
     uid = user.uid
     try:
@@ -193,6 +228,11 @@ def update_user_password(email, new_password):
 
 
 def update_admin_role(admin_id, role_status):
+    """
+    The function will take admin id and role status i.e., True or False for user activeness.
+    This function will update Offender active and inactive with the help of boolean
+    value.
+    """
     try:
         user = database.child("Users").child(admin_id).update({"role": role_status})
         if user:
@@ -204,17 +244,37 @@ def update_admin_role(admin_id, role_status):
     return False
 
 
-def get_active_offenders():
+def get_offenders_by_status(status):
+    """
+    The function will return offenders which are active i.e., contains active status True.
+    """
     try:
         clients = database.child("Offenders").get().val()
         if clients:
             offenders = []
             clients = dict(clients)
             for key, value in clients.items():
-                if clients[key].get("active"):
+                if clients[key].get("active") == status:
                     print(f"ACTIVE CLIENT >>> {clients[key]['emailAddress']}")
                     offenders.append(clients[key])
             return offenders
     except Exception as e:
         print(f"ERROR ACTIVE OFFENDERS >>> {e}")
     return None
+
+
+def add_user_profile_pic(user_name, image_path, field_name):
+    """
+    This function will add and update profile pic path. Image is stored on the machine where API
+    is deployed and the path is being updated in the Firebase Realtime database.
+    """
+    try:
+        unique_id = features.get_unique_name_for_document(user_name)
+        resp = database.child("Users").child(unique_id).update({field_name: image_path})
+        if resp:
+            return True
+    except Exception as e:
+        print(f"PROFILE PIC EXCEPTION >>> {e}")
+    return False
+
+

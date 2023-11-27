@@ -1,4 +1,5 @@
 import datetime
+# from marshmallow import Schema, fields
 
 
 class Offender:
@@ -24,6 +25,7 @@ class Offender:
     uniqueId: str
     active: bool
     addedBy: str
+    profilePic: str
     scoreCard = {
         "monitoringPeriod": "20-03-2023",
         "totalCheckins": 0,
@@ -60,6 +62,12 @@ class User:
     gender: str
     phoneNumber: str
     password: str
-    role: int           # 1- Super User     2- Super Admin      3- Admin
+    profilePic: str
+    role: int  # 1- Super User     2- Super Admin      3- Admin
     dateOfRegistration = datetime.datetime.now()
     clientsAssigned: list
+
+
+# class Login(Schema):
+#     email = fields.Str(required=True)
+#     password = fields.Str(required=True)
