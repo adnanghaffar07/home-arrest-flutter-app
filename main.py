@@ -4,6 +4,7 @@ from flask import Flask, request
 import features
 from authentication_system import *
 import firebase_db_controller as db
+from models import Offender
 
 # from flask_smorest import Blueprint
 
