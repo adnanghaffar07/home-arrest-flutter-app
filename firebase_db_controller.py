@@ -15,7 +15,7 @@ firebase_admin.initialize_app(cred)  # initialization firebase application.
 firebase = pyrebase.initialize_app(firebase_config)
 database = firebase.database()
 auth2 = firebase.auth()
-
+storage = firebase.storage()
 
 # ************************************************************************************************************
 
@@ -28,7 +28,7 @@ def register_user(payload):
     email = payload.get("email", "")
     password = payload.get("password", "")
     try:
-        user = auth2.create_user_with_email_and_password(email, password)
+        auth2.create_user_with_email_and_password(email, password)
         print(">>> REGISTRATION SUCCESSFUL")
         # Get name for document
         unique_id = features.get_unique_name_for_document(email)
@@ -76,12 +76,38 @@ def add_offender_client(client):
     try:
         unique_id = client.get("uniqueId", "")
         if if_entry_exists("Offenders", unique_id):
-            return False
+            return 403
         details = dict(database.child("Offenders").child(unique_id).set(client))
         print(details)
-        return True
+        # function for updating user details.
+        agent_id = client.get("agentAssigned", "")
+        add_offender_id_in_user_details(features.get_unique_name_for_document(agent_id), unique_id)
+        # print(details)
+        return 201
     except Exception as e:
         print("ADD OFFENDER ERROR >>> ", e)
+    return 500
+
+
+def add_offender_id_in_user_details(agent_id, offender_id):
+    try:
+        client_list = []
+        offenders_list = database.child("Users").child(agent_id).get().val()
+        if offenders_list:
+            offenders_list = dict(offenders_list)
+            print(offenders_list)
+            if not offenders_list.get("clientsAssigned"):
+                client_list.append(offender_id)
+                database.child("Users").child(agent_id).update({"clientsAssigned": client_list})
+                return True
+            elif offenders_list.get("clientsAssigned"):
+                client_list = list(offenders_list.get("clientsAssigned"))
+                print(client_list)
+                client_list.append(offender_id)
+                database.child("Users").child(agent_id).update({"clientsAssigned": client_list})
+                return True
+    except Exception as e:
+        print(f"ERROR ADD OFFENDER ID IN USER >>>> {e}")
     return False
 
 
@@ -104,20 +130,42 @@ def get_offenders_details_list():
     information of offender.
     """
     try:
-        details = database.child("Offenders").get().val()
-        details = dict(details)
-        payload = []
-        if details:
-            for key, value in details.items():
-                user_id = details.get(key).get("agentAssigned")
-                # function to get agent details.
-                details[key]["agentDetails"] = get_profile_details(features.get_unique_name_for_document(user_id))
-                del details[key]["agentDetails"]["password"]  # for privacy deleting password field from payload.
-                payload.append(details[key])
-            return payload
+        users = database.child("Users").get().val()
+        if users:
+            users = dict(users)
+            resp_users = []
+            for key, value in users.items():
+                assigned_clients = users.get(key).get("clientsAssigned")
+                client_list = []
+                if assigned_clients:
+                    for client in assigned_clients:
+                        client_details = database.child("Offenders").child(client).get().val()
+                        if client_details:
+                            client_list.append(dict(client_details))
+                else:
+                    users[key]["clientsAssigned"] = []
+                users[key]["clientAssignedDetails"] = client_list
+                resp_users.append(users[key])
+            return resp_users
     except Exception as e:
         print(e)
-    return None
+        return None
+    # try:
+    #     details = database.child("Offenders").get().val()
+    #
+    #     payload = []
+    #     if details:
+    #         details = dict(details)
+    #         for key, value in details.items():
+    #             user_id = details.get(key).get("agentAssigned")
+    #             # function to get agent details.
+    #             details[key]["agentDetails"] = get_profile_details(features.get_unique_name_for_document(user_id))
+    #             del details[key]["agentDetails"]["password"]  # for privacy deleting password field from payload.
+    #             payload.append(details[key])
+    #         return payload
+    # except Exception as e:
+    #     print(e)
+    # return None
 
 
 def get_offender_details(client_id):
@@ -270,11 +318,13 @@ def add_user_profile_pic(user_name, image_path, field_name):
     """
     try:
         unique_id = features.get_unique_name_for_document(user_name)
-        resp = database.child("Users").child(unique_id).update({field_name: image_path})
+        image = storage.child(image_path).put(image_path)
+        image = dict(image)
+        image_url = storage.child(image_path).get_url(token=image.get("downloadTokens"))
+        print(image_url)
+        resp = database.child("Users").child(unique_id).update({field_name: image_url})
         if resp:
-            return True
+            return True, image_url
     except Exception as e:
         print(f"PROFILE PIC EXCEPTION >>> {e}")
-    return False
-
-
+    return False, None

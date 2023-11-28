@@ -10,10 +10,10 @@ from models import Offender
 
 app = Flask(__name__)
 
-
 app.config["SECRET_KEY"] = '0F53127e42354ze38D4024a9e2789a24'  # generated secret key for token generation
 
 cors = CORS(app)
+
 
 # blp = Blueprint("validation", __name__, description="Model Validations")
 
@@ -137,7 +137,7 @@ def sign_up():
             "token": token
         }, 201
     return {
-        "message": "User already exists with same email or phone number",
+        "message": f"User already exists with E-mail: {payload.get('email')}",
         "status": False,
     }
 
@@ -302,7 +302,7 @@ def change_role():
     3- Admin
     """
     admin_id = request.args.to_dict().get("adminId")
-    role_status = request.args.to_dict().get("roleStatus")
+    role_status = int(request.args.to_dict().get("roleStatus"))
     permission_access = change_role.payload.get("role")
     if permission_access != 1:
         return {
@@ -355,10 +355,15 @@ def upload_profile_pic():
             print(rename_file)
             file.save(os.path.join(image_path, rename_file))
             # DB Function to update user-profile and add image path in profile
-            if db.add_user_profile_pic(user_name, f"{image_path}/{rename_file}", "profilePic"):
+            flag, image_url = db.add_user_profile_pic(user_name, f"{image_path}/{rename_file}", "profilePic")
+            if flag and image_url:
+                # to remove images from local storage after saving in firebase cloud storage.
+                os.remove(f"{image_path}/{rename_file}")
+                # os.removedirs(image_path)
                 return {
                     "status": True,
-                    "message": "profile pic saved successfully."
+                    "message": "profile pic saved successfully.",
+                    "profilePic": f"{image_url}"
                 }
             else:
                 return {
@@ -377,7 +382,7 @@ def upload_profile_pic():
         }, 500
 
 
-
+# *********************************** Offender End-points***********************************************
 @app.route("/clients/new-offender", methods=["POST"])
 @authentication
 def add_new_offender():
@@ -410,7 +415,13 @@ def add_new_offender():
     offender.recentAlerts = payload.get("recentAlerts", offender.recentAlerts)
     offender.courtAppearances = payload.get("courtAppearances", offender.courtAppearances)
     client = offender.__dict__
-    if db.add_offender_client(client):
+    code = db.add_offender_client(client)
+    if code == 403:
+        return {
+            "status": False,
+            "message": f"Entry already exists with E-mail: {offender.emailAddress}"
+        }, 403
+    elif code == 201:
         return {
             "status": True,
             "message": "client added successfully",
