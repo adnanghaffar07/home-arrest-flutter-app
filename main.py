@@ -301,8 +301,14 @@ def change_role():
     2- Super Admin
     3- Admin
     """
+    role_list = [1, 2, 3]
     admin_id = request.args.to_dict().get("adminId")
     role_status = int(request.args.to_dict().get("roleStatus"))
+    if role_status not in role_list:
+        return {
+            "status": False,
+            "message": "Invalid role selected."
+        }, 500
     permission_access = change_role.payload.get("role")
     if permission_access != 1:
         return {
@@ -389,6 +395,11 @@ def add_new_offender():
     """
     this end-point will add new offender in the database.
     """
+    if add_new_offender.payload.get("role") != 1:
+        return {
+            "status": False,
+            "message": "Permission Denied."
+        }, 401
     payload = request.get_json()
     offender = Offender()
     offender.uniqueId = features.get_unique_name_for_document(payload.get("emailAddress", ""))
@@ -407,13 +418,37 @@ def add_new_offender():
     offender.monitorLevel = payload.get("monitorLevel")
     offender.profilePic = ""
     offender.location = payload.get("location", {})
-    offender.agentAssigned = payload.get("agentAssigned", "")
+    offender.agentAssigned = add_new_offender.payload.get("email", "")
     offender.active = payload.get("active", "active")
     offender.dateOfEntry = str(datetime.now())
     offender.addedBy = add_new_offender.payload.get("email", "")
     offender.scoreCard = payload.get("scoreCard", offender.scoreCard)
     offender.recentAlerts = payload.get("recentAlerts", offender.recentAlerts)
     offender.courtAppearances = payload.get("courtAppearances", offender.courtAppearances)
+    offender.checkInDetails = payload.get("checkInDetails", offender.checkInDetails)
+    offender.pinNumber = offender.pinNumber
+    offender.braceletName = offender.braceletName
+    offender.braceletVersion = offender.braceletVersion
+    offender.breathalyzer = offender.breathalyzer
+    offender.allDocumentPresent = offender.allDocumentPresent
+    offender.absconded = offender.absconded
+    offender.appearanceDate = offender.appearanceDate
+    offender.appearanceTime = offender.appearanceTime
+    offender.specialInstructions = offender.specialInstructions
+    offender.monitoringInformation = offender.monitoringInformation
+    offender.monitoringFrequency = offender.monitoringFrequency
+    offender.monitorTime = offender.monitorTime
+    offender.photoCheckIn = offender.photoCheckIn
+    offender.videoCheckIn = offender.videoCheckIn
+    offender.sobrietyCheckIn = offender.sobrietyCheckIn
+    offender.requiredTimesCheckIn = offender.requiredTimesCheckIn
+    offender.mainScheduleOnly = offender.mainScheduleOnly
+    offender.contactDetails = offender.contactDetails
+    offender.workDetails = offender.workDetails
+    offender.personalDetails = offender.personalDetails
+    offender.billingDetails = offender.billingDetails
+    offender.guarantors = offender.guarantors
+
     client = offender.__dict__
     code = db.add_offender_client(client)
     if code == 403:

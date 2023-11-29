@@ -82,7 +82,7 @@ def add_offender_client(client):
         # function for updating user details.
         agent_id = client.get("agentAssigned", "")
         add_offender_id_in_user_details(features.get_unique_name_for_document(agent_id), unique_id)
-        # print(details)
+        print(details)
         return 201
     except Exception as e:
         print("ADD OFFENDER ERROR >>> ", e)
@@ -129,43 +129,44 @@ def get_offenders_details_list():
     Function will return list of offenders. The list contains objects which contains the complete
     information of offender.
     """
-    try:
-        users = database.child("Users").get().val()
-        if users:
-            users = dict(users)
-            resp_users = []
-            for key, value in users.items():
-                assigned_clients = users.get(key).get("clientsAssigned")
-                client_list = []
-                if assigned_clients:
-                    for client in assigned_clients:
-                        client_details = database.child("Offenders").child(client).get().val()
-                        if client_details:
-                            client_list.append(dict(client_details))
-                else:
-                    users[key]["clientsAssigned"] = []
-                users[key]["clientAssignedDetails"] = client_list
-                resp_users.append(users[key])
-            return resp_users
-    except Exception as e:
-        print(e)
-        return None
+    #   Algorithm to get data according to old front-end concept where clients were being assigned to agents
+    #   manually.
     # try:
-    #     details = database.child("Offenders").get().val()
-    #
-    #     payload = []
-    #     if details:
-    #         details = dict(details)
-    #         for key, value in details.items():
-    #             user_id = details.get(key).get("agentAssigned")
-    #             # function to get agent details.
-    #             details[key]["agentDetails"] = get_profile_details(features.get_unique_name_for_document(user_id))
-    #             del details[key]["agentDetails"]["password"]  # for privacy deleting password field from payload.
-    #             payload.append(details[key])
-    #         return payload
+    #     users = database.child("Users").get().val()
+    #     if users:
+    #         users = dict(users)
+    #         resp_users = []
+    #         for key, value in users.items():
+    #             assigned_clients = users.get(key).get("clientsAssigned")
+    #             client_list = []
+    #             if assigned_clients:
+    #                 for client in assigned_clients:
+    #                     client_details = database.child("Offenders").child(client).get().val()
+    #                     if client_details:
+    #                         client_list.append(dict(client_details))
+    #             else:
+    #                 users[key]["clientsAssigned"] = []
+    #             users[key]["clientAssignedDetails"] = client_list
+    #             resp_users.append(users[key])
+    #         return resp_users
     # except Exception as e:
     #     print(e)
-    # return None
+    #     return None
+    try:
+        details = database.child("Offenders").get().val()
+
+        payload = []
+        if details:
+            details = dict(details)
+            for key, value in details.items():
+                user_id = details.get(key).get("agentAssigned")
+                # function to get agent details.
+                details[key]["agentDetails"] = get_profile_details(features.get_unique_name_for_document(user_id)) or {}
+                payload.append(details[key])
+            return payload
+    except Exception as e:
+        print(e)
+    return None
 
 
 def get_offender_details(client_id):

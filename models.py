@@ -1,4 +1,6 @@
 import datetime
+
+
 # from marshmallow import Schema, fields
 
 
@@ -47,6 +49,79 @@ class Offender:
         "late": 0,
         "voluntaryCheckins": 0
     }
+    checkInDetails = [{
+        "requestTime": "29-11-23",
+        "checkedInTime": "29-11-23",
+        "description": "Voluntary Check-in Request"
+    }]
+    pinNumber = ""
+    braceletName = ""
+    braceletVersion = ""
+    breathalyzer = []
+    allDocumentPresent = False
+    absconded = False
+    appearanceDate = ""
+    appearanceTime = ""
+    specialInstructions = ""
+    monitoringInformation = ""
+    monitoringFrequency = ""
+    monitorTime = ""
+    photoCheckIn = False
+    videoCheckIn = False
+    sobrietyCheckIn = False
+    requiredTimesCheckIn = False
+    mainScheduleOnly = False
+    contactDetails = {
+        "homeAddress": "",
+        "homeCity": "",
+        "homeCountry": "",
+        "homeProvince": "",
+        "homePostalCode": "4242",
+        "homeLat": 31.342,
+        "homeLng": 71.324,
+        "homeRadius": 0,
+        "homePhoneNumber": ""
+    }
+    workDetails = {
+        "workAddress": "",
+        "workCity": "",
+        "workCountry": "",
+        "workProvince": "",
+        "workPostalCode": "",
+        "workLat": 31.342,
+        "workLng": 71.342,
+        "workRadius": 0,
+        "workPhoneNumber": "",
+        "employerName": ""
+    }
+    personalDetails = {
+        "materialStatus": "",
+        "rentOrOwn": "",
+        "howLongInMonths": "",
+        "howLongInYears": "",
+        "other": "",
+        "sourceOfIncome": "",
+        "driverLicenceNo": "",
+        "driverLicenceState": "",
+        "age": "",
+        "usStatus": "",
+        "usCitizen": "",
+        "alsoKnownAs": "",
+        "race": "",
+        "sex": "",
+        "height": "",
+        "weight": "",
+        "eye": ""
+    }
+    billingDetails = {
+        "monitoringFee": 0.0,
+        "signUpFee": 0.0,
+        "paymentAmount": 0.0,
+        "paymentFrequency": "",
+        "thirdPartyPay": False,
+        "thirdParty": ""
+    }
+    guarantors = ""
 
 
 class User:
@@ -66,7 +141,6 @@ class User:
     role: int  # 1- Super User     2- Super Admin      3- Admin
     dateOfRegistration = datetime.datetime.now()
     clientsAssigned: list
-
 
 # class Login(Schema):
 #     email = fields.Str(required=True)
