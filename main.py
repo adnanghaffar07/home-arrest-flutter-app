@@ -117,11 +117,24 @@ def sign_up():
     :return:
     """
     payload = request.get_json()
+    role_list = [1, 2, 3]
+    role_status = int(request.get_json().get("role"))
+    if role_status not in role_list:
+        return {
+            "status": False,
+            "message": "Invalid role selected."
+        }, 500
     # register_user is array declared globally to save users for demo.
     payload["location"] = payload.get("location", {})
     payload["userName"] = payload.get("firstName", "") + " " + payload.get("lastName", "")
     payload["clientsAssigned"] = []
     payload["profilePic"] = ""
+    if payload.get("role") == 1:
+        payload["roleName"] = "super user"
+    elif payload.get("role") == 2:
+        payload["roleName"] = "super admin"
+    if payload.get("role") == 3:
+        payload["roleName"] = "admin"
     if len(payload.get("password", "")) < 6:
         return {
             "status": False,
@@ -139,7 +152,7 @@ def sign_up():
     return {
         "message": f"User already exists with E-mail: {payload.get('email')}",
         "status": False,
-    }
+    }, 403
 
 
 @app.route("/log-in", methods=["POST"])
@@ -395,11 +408,11 @@ def add_new_offender():
     """
     this end-point will add new offender in the database.
     """
-    if add_new_offender.payload.get("role") != 1:
-        return {
-            "status": False,
-            "message": "Permission Denied."
-        }, 401
+    # if add_new_offender.payload.get("role") != 1:
+    #     return {
+    #         "status": False,
+    #         "message": "Permission Denied."
+    #     }, 401
     payload = request.get_json()
     offender = Offender()
     offender.uniqueId = features.get_unique_name_for_document(payload.get("emailAddress", ""))
@@ -417,8 +430,8 @@ def add_new_offender():
     offender.checkIn = payload.get("checkIn")
     offender.monitorLevel = payload.get("monitorLevel")
     offender.profilePic = ""
-    offender.location = payload.get("location", {})
-    offender.agentAssigned = add_new_offender.payload.get("email", "")
+    offender.location = payload.get("location", offender.location)
+    offender.agentAssigned = payload.get("agentAssigned", add_new_offender.payload.get("email", ""))
     offender.active = payload.get("active", "active")
     offender.dateOfEntry = str(datetime.now())
     offender.addedBy = add_new_offender.payload.get("email", "")
@@ -568,6 +581,52 @@ def get_pending_offenders():
         "status": False,
         "message": "Something went wrong..."
     }, 500
+
+
+@app.route("/user/update-location", methods=["POST"])
+@authentication
+def update_user_current_location():
+    payload = request.get_json()
+    user_id = update_user_current_location.payload.get("uniqueId", "")
+    # db function to update user current coordinates.
+    status_code = db.update_user_current_location(payload, user_id)
+    if status_code == 200:
+        return {
+            "status": True,
+            "message": "Coordinates updated successfully."
+        }, status_code
+    if status_code == 404:
+        return {
+            "status": False,
+            "message": f"User Not Found with ID: {user_id}"
+        }, status_code
+    return {
+        "status": False,
+        "message": "Something went wrong"
+    }, status_code
+
+
+@app.route("/offender/get-current-location", methods=["GET"])
+@authentication
+def get_offender_location():
+    offender_id = request.args.to_dict().get("id")
+    # db function to get current location of the offender.
+    location, status = db.get_offender_current_location(offender_id)
+    if status == 200 and location != "NA":
+        return {
+            "status": True,
+            "message": "location found",
+            "location": location
+        }, status
+    elif location == "NA":
+        return {
+            "status": False,
+            "message": "location unavailable"
+        }, status
+    return {
+        "status": False,
+        "message": "Client not found"
+    }, status
 
 
 if __name__ == '__main__':

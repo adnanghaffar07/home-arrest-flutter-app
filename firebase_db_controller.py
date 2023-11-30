@@ -41,7 +41,7 @@ def register_user(payload):
             return False, 401
     except Exception as e:
         print(f"ERROR >>> {e}")
-    return False, 400
+    return False, 403
 
 
 def add_user_in_database(payload):
@@ -282,8 +282,14 @@ def update_admin_role(admin_id, role_status):
     This function will update Offender active and inactive with the help of boolean
     value.
     """
+    if role_status == 1:
+        role_name = "super user"
+    elif role_status == 2:
+        role_name = "super admin"
+    if role_status == 3:
+        role_name = "admin"
     try:
-        user = database.child("Users").child(admin_id).update({"role": role_status})
+        user = database.child("Users").child(admin_id).update({"role": role_status, "roleName": role_name})
         if user:
             return True
         else:
@@ -329,3 +335,30 @@ def add_user_profile_pic(user_name, image_path, field_name):
     except Exception as e:
         print(f"PROFILE PIC EXCEPTION >>> {e}")
     return False, None
+
+
+def update_user_current_location(payload, user_id):
+    try:
+        user = database.child("Users").child(user_id).update(payload)
+        if user:
+            return 200
+        else:
+            return 404
+    except Exception as e:
+        print(f"ERROR UPDATING CURRENT LOCATION >>> {e}")
+    return 500
+
+
+def get_offender_current_location(offender_id):
+    try:
+        offender = database.child("Offenders").child(offender_id).get().val()
+        if offender:
+            offender = dict(offender)
+            location = offender.get("location")
+            if location:
+                return location, 200
+            else:
+                return "NA", 200
+    except Exception as e:
+        print(f"ERROR FOR GETTING OFFENDER CURRENT LOCATION >>> {e}")
+    return None, 404

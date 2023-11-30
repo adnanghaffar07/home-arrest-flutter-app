@@ -21,7 +21,10 @@ class Offender:
     sentenceEndDate: str
     checkIn: str
     monitorLevel: str
-    location = {}
+    location = {
+        "lat": 31.47601069443745,
+        "lng": 74.30950803039627
+    }
     agentAssigned: str
     dateOfEntry: str
     uniqueId: str
@@ -132,13 +135,17 @@ class User:
     firstName: str
     lastName: str
     userName: str
-    location = {}
+    location = {
+        "lat": 0.0,
+        "lng": 0.0
+    }
     email: str
     gender: str
     phoneNumber: str
     password: str
     profilePic: str
     role: int  # 1- Super User     2- Super Admin      3- Admin
+    roleName: str
     dateOfRegistration = datetime.datetime.now()
     clientsAssigned: list
 
