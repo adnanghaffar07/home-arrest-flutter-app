@@ -629,5 +629,33 @@ def get_offender_location():
     }, status
 
 
+@app.route("/users/search", methods=["GET"])
+@authentication
+def get_users_by_query():
+    query = request.args.to_dict().get("query")
+    print(query)
+    # db function to perform query search.
+    results = db.user_search_by_query(query)
+    return {
+        "status": True,
+        "details": results,
+        "totalResults": len(results)
+    }
+
+
+@app.route("/offenders/search", methods=["GET"])
+@authentication
+def get_offenders_by_query():
+    query = request.args.to_dict().get("query")
+    print(query)
+    # db function to perform query search.
+    results = db.offender_search_by_query(query)
+    return {
+        "status": True,
+        "details": results,
+        "totalResults": len(results)
+    }
+
+
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=5000, threaded=True)

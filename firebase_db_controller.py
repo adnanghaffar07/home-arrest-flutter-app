@@ -17,6 +17,7 @@ database = firebase.database()
 auth2 = firebase.auth()
 storage = firebase.storage()
 
+
 # ************************************************************************************************************
 
 
@@ -242,18 +243,18 @@ def get_admin_by_role_id(role_id):
     3- Admin
     """
     try:
-        users = database.child("Users").get().val()
+        users = database.child("Users").order_by_child("role").equal_to(role_id).get().val()
         if users:
-            payload = []
-            users = dict(users)
-            for key, value in users.items():
-                if users[key]["role"] == role_id:
-                    del users[key]["password"]
-                    payload.append(users[key])
-            return payload
+            # payload = []
+            users = list(dict(users).values())
+            # for key, value in users.items():
+            #     if users[key]["role"] == role_id:
+            #         del users[key]["password"]
+            #         payload.append(users[key])
+            return users
     except Exception as e:
         print(f"ERROR >>> {e}")
-    return None
+    return []
 
 
 def update_user_password(email, new_password):
@@ -304,18 +305,18 @@ def get_offenders_by_status(status):
     The function will return offenders which are active i.e., contains active status True.
     """
     try:
-        clients = database.child("Offenders").get().val()
+        clients = database.child("Offenders").order_by_child("active").equal_to(status).get().val()
         if clients:
-            offenders = []
-            clients = dict(clients)
-            for key, value in clients.items():
-                if clients[key].get("active") == status:
-                    print(f"ACTIVE CLIENT >>> {clients[key]['emailAddress']}")
-                    offenders.append(clients[key])
-            return offenders
+            # offenders = []
+            clients = list(dict(clients).values())
+            # for key, value in clients.items():
+            #     if clients[key].get("active") == status:
+            #         print(f"ACTIVE CLIENT >>> {clients[key]['emailAddress']}")
+            #         offenders.append(clients[key])
+            return clients
     except Exception as e:
         print(f"ERROR ACTIVE OFFENDERS >>> {e}")
-    return None
+    return []
 
 
 def add_user_profile_pic(user_name, image_path, field_name):
@@ -362,3 +363,77 @@ def get_offender_current_location(offender_id):
     except Exception as e:
         print(f"ERROR FOR GETTING OFFENDER CURRENT LOCATION >>> {e}")
     return None, 404
+
+
+def user_search_by_query(query):
+    try:
+        results = []
+        by_username = database.child("Users").order_by_child("userName").equal_to(query).get().val()
+        if by_username:
+            by_username = list(dict(by_username).values())
+            results.extend(by_username)
+        by_first_name = database.child("Users").order_by_child("firstName").equal_to(query).get().val()
+        if by_first_name:
+            by_first_name = list(dict(by_first_name).values())
+            results.extend(by_first_name)
+        by_last_name = database.child("Users").order_by_child("lastName").equal_to(query).get().val()
+        if by_first_name:
+            by_last_name = list(dict(by_last_name).values())
+            results.extend(by_last_name)
+        by_phone_no = database.child("Users").order_by_child("phoneNumber").equal_to(query).get().val()
+        if by_phone_no:
+            by_phone_no = list(dict(by_phone_no).values())
+            results.extend(by_phone_no)
+        by_email = database.child("Users").order_by_child("email").equal_to(query).get().val()
+        if by_email:
+            by_email = list(dict(by_email).values())
+            results.extend(by_email)
+        return results
+    except Exception as e:
+        print(f"ERROR SEARCHING USER >>> {e}")
+    return []
+
+
+def offender_search_by_query(query):
+    results = []
+    try:
+        by_first_name = database.child("Offenders").order_by_child("firstName").equal_to(query).get().val()
+        if by_first_name:
+            by_first_name = list(dict(by_first_name).values())
+            results.extend(by_first_name)
+        # print(results)
+        by_last_name = database.child("Offenders").order_by_child("lastName").equal_to(query).get().val()
+        if by_first_name:
+            by_last_name = list(dict(by_last_name).values())
+            results.extend(by_last_name)
+        # print(results)
+        by_phone_no = database.child("Offenders").order_by_child("phoneNumber").equal_to(query).get().val()
+        if by_phone_no:
+            by_phone_no = list(dict(by_phone_no).values())
+            results.extend(by_phone_no)
+        # print(results)
+        by_email = database.child("Offenders").order_by_child("emailAddress").equal_to(query).get().val()
+        if by_email:
+            by_email = list(dict(by_email).values())
+            results.extend(by_email)
+        # print(results)
+        by_middle_name = database.child("Offenders").order_by_child("middleName").equal_to(query).get().val()
+        if by_middle_name:
+            by_middle_name = list(dict(by_middle_name).values())
+            results.extend(by_middle_name)
+        # print(results)
+        by_maiden_name = database.child("Offenders").order_by_child("maidenName").equal_to(query).get().val()
+        if by_maiden_name:
+            by_maiden_name = list(dict(by_maiden_name).values())
+            results.extend(by_maiden_name)
+        # print(results)
+        by_ssn = database.child("Offenders").order_by_child("ssn").equal_to(query).get().val()
+        if by_ssn:
+            by_ssn = list(dict(by_ssn).values())
+            results.extend(by_ssn)
+        # print(results)
+        # results = features.filter_duplicates_from_dict(results, "emailAddress")
+        return results
+    except Exception as e:
+        print(f"ERROR SEARCHING USER >>> {e}")
+    return results

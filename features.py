@@ -108,3 +108,18 @@ def get_unique_name_for_document(email):
         return first_part
     else:
         return None
+
+
+def filter_duplicates_from_dict(data_list, key_name):
+    seen_values = set()
+    filtered_list = []
+
+    for data in data_list:
+        current_value = data.get(key_name)
+
+        # Check if the value for the specified key is unique
+        if current_value is not None and current_value not in seen_values:
+            seen_values.add(current_value)
+            filtered_list.append(data)
+
+    return filtered_list
