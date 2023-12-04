@@ -5,8 +5,9 @@ import features
 from authentication_system import *
 import firebase_db_controller as db
 from models import Offender
+from models_serializer import OffenderSerializer, Login, UserSerializer
 
-# from flask_smorest import Blueprint
+from flask_smorest import Blueprint
 
 app = Flask(__name__)
 
@@ -14,8 +15,7 @@ app.config["SECRET_KEY"] = '0F53127e42354ze38D4024a9e2789a24'  # generated secre
 
 cors = CORS(app)
 
-
-# blp = Blueprint("validation", __name__, description="Model Validations")
+blp = Blueprint("validation", __name__, description="Model Validations")
 
 
 def authentication(func):
@@ -117,6 +117,14 @@ def sign_up():
     :return:
     """
     payload = request.get_json()
+    try:
+        UserSerializer().load(payload)
+    except Exception as e:
+        print(f"ERROR VALIDATION >>> {e}")
+        return {
+            "status": False,
+            "message": "invalid input fields"
+        }, 422
     role_list = [1, 2, 3]
     role_status = int(request.get_json().get("role"))
     if role_status not in role_list:
@@ -129,11 +137,12 @@ def sign_up():
     payload["userName"] = payload.get("firstName", "") + " " + payload.get("lastName", "")
     payload["clientsAssigned"] = []
     payload["profilePic"] = ""
+    passwd = payload.get("password")
     if payload.get("role") == 1:
         payload["roleName"] = "super user"
     elif payload.get("role") == 2:
         payload["roleName"] = "super admin"
-    if payload.get("role") == 3:
+    elif payload.get("role") == 3:
         payload["roleName"] = "admin"
     if len(payload.get("password", "")) < 6:
         return {
@@ -143,7 +152,7 @@ def sign_up():
     flag, status_code = db.register_user(payload)
 
     if flag:
-        token = getToken(payload["email"], payload["password"], app.config["SECRET_KEY"])
+        token = getToken(payload["email"], passwd, app.config["SECRET_KEY"])
         return {
             "message": "Account Created Successfully",
             "status": True,
@@ -156,7 +165,6 @@ def sign_up():
 
 
 @app.route("/log-in", methods=["POST"])
-# @blp.arguments(Login)
 def log_in():
     """
     The function will receive user credentials and then return response.
@@ -164,6 +172,14 @@ def log_in():
     :return:
     """
     payload = request.get_json()
+    try:
+        Login().load(payload)
+    except Exception as e:
+        print(f"ERROR VALIDATION >>> {e}")
+        return {
+            "status": False,
+            "message": "invalid input fields"
+        }, 422
     print(payload)
     if len(payload.get("password", "")) < 6:
         return {
@@ -193,6 +209,14 @@ def update_profile():
     This end-point will update user profile details.
     """
     payload = request.get_json()
+    try:
+        UserSerializer().load(payload)
+    except Exception as e:
+        print(f"ERROR VALIDATION >>> {e}")
+        return {
+            "status": False,
+            "message": "invalid input fields"
+        }, 422
     email = update_profile.payload.get("email")
     # DB function to update user profile details.
     resp = db.update_user_profile_details(payload, email)
@@ -401,6 +425,42 @@ def upload_profile_pic():
         }, 500
 
 
+@app.route("/users/search", methods=["GET"])
+@authentication
+def get_users_by_query():
+    """
+    Search function for searching user based on first name, last name etc.
+    """
+    query = request.args.to_dict().get("query")
+    print(query)
+    # db function to perform query search.
+    results = db.user_search_by_query(query)
+    return {
+        "status": True,
+        "details": results,
+        "totalResults": len(results)
+    }
+
+
+@app.route("/user/get-assigned-clients", methods=["GET"])
+@authentication
+def get_user_assigned_clients():
+    payload = get_user_assigned_clients.payload.get("clientsAssigned")
+    if payload:
+        # db function to get assigned clients
+        response = db.get_assigned_clients(payload)
+        return {
+            "status": True,
+            "details": response,
+            "totalResults": len(response)
+        }
+    return {
+        "status": True,
+        "details": [],
+        "totalResults": 0
+    }
+
+
 # *********************************** Offender End-points***********************************************
 @app.route("/clients/new-offender", methods=["POST"])
 @authentication
@@ -414,6 +474,16 @@ def add_new_offender():
     #         "message": "Permission Denied."
     #     }, 401
     payload = request.get_json()
+    # Validation of response.
+    try:
+        OffenderSerializer().load(payload)
+    except Exception as e:
+        print(f"ERROR VALIDATION >>> {e}")
+        return {
+            "status": False,
+            "message": "invalid Fields."
+        }, 422
+    # this part of code assigning default values and handle null or missing fields.
     offender = Offender()
     offender.uniqueId = features.get_unique_name_for_document(payload.get("emailAddress", ""))
     offender.clientType = payload.get("clientType")
@@ -527,6 +597,14 @@ def update_offender_info():
         End-Point for updating Offender information.
     """
     payload = request.get_json()
+    try:
+        OffenderSerializer().load(payload)
+    except Exception as e:
+        print(f"ERROR VALIDATION >>> {e}")
+        return {
+            "status": False,
+            "message": "invalid Fields."
+        }, 422
     # DB Function to update details.
     data = db.update_offender_client_info(payload)
     if data:
@@ -586,6 +664,9 @@ def get_pending_offenders():
 @app.route("/user/update-location", methods=["POST"])
 @authentication
 def update_user_current_location():
+    """
+    This end-point will receive user's current location and update in the db.
+    """
     payload = request.get_json()
     user_id = update_user_current_location.payload.get("uniqueId", "")
     # db function to update user current coordinates.
@@ -609,6 +690,9 @@ def update_user_current_location():
 @app.route("/offender/get-current-location", methods=["GET"])
 @authentication
 def get_offender_location():
+    """
+    This function will return the current location of the offender.
+    """
     offender_id = request.args.to_dict().get("id")
     # db function to get current location of the offender.
     location, status = db.get_offender_current_location(offender_id)
@@ -629,23 +713,12 @@ def get_offender_location():
     }, status
 
 
-@app.route("/users/search", methods=["GET"])
-@authentication
-def get_users_by_query():
-    query = request.args.to_dict().get("query")
-    print(query)
-    # db function to perform query search.
-    results = db.user_search_by_query(query)
-    return {
-        "status": True,
-        "details": results,
-        "totalResults": len(results)
-    }
-
-
 @app.route("/offenders/search", methods=["GET"])
 @authentication
 def get_offenders_by_query():
+    """
+    Function to search offender based on offender details like first name, last name etc.
+    """
     query = request.args.to_dict().get("query")
     print(query)
     # db function to perform query search.

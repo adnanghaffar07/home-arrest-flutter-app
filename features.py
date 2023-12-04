@@ -121,5 +121,4 @@ def filter_duplicates_from_dict(data_list, key_name):
         if current_value is not None and current_value not in seen_values:
             seen_values.add(current_value)
             filtered_list.append(data)
-
     return filtered_list

@@ -1,7 +1,6 @@
 import datetime
 
-
-# from marshmallow import Schema, fields
+from marshmallow import Schema, fields
 
 
 class Offender:
@@ -53,6 +52,7 @@ class Offender:
         "voluntaryCheckins": 0
     }
     checkInDetails = [{
+        "requestID": "3435535",
         "requestTime": "29-11-23",
         "checkedInTime": "29-11-23",
         "description": "Voluntary Check-in Request"
@@ -125,30 +125,3 @@ class Offender:
         "thirdParty": ""
     }
     guarantors = ""
-
-
-class User:
-    """
-    User Model
-    """
-    uniqueId: str
-    firstName: str
-    lastName: str
-    userName: str
-    location = {
-        "lat": 0.0,
-        "lng": 0.0
-    }
-    email: str
-    gender: str
-    phoneNumber: str
-    password: str
-    profilePic: str
-    role: int  # 1- Super User     2- Super Admin      3- Admin
-    roleName: str
-    dateOfRegistration = datetime.datetime.now()
-    clientsAssigned: list
-
-# class Login(Schema):
-#     email = fields.Str(required=True)
-#     password = fields.Str(required=True)
