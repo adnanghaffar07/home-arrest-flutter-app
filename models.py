@@ -72,6 +72,7 @@ class Offender:
     photoCheckIn = False
     videoCheckIn = False
     sobrietyCheckIn = False
+    braceletConnection = False
     requiredTimesCheckIn = False
     mainScheduleOnly = False
     contactDetails = {

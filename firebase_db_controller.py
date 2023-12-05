@@ -126,7 +126,7 @@ def if_entry_exists(collection, unique_id):
     return False
 
 
-def get_offenders_details_list():
+def get_offenders_details_list(user_id):
     """
     Function will return list of offenders. The list contains objects which contains the complete
     information of offender.
@@ -155,20 +155,22 @@ def get_offenders_details_list():
     #     print(e)
     #     return None
     try:
-        details = database.child("Offenders").get().val()
-
-        payload = []
+        details = database.child("Offenders").order_by_child("agentAssigned").equal_to(user_id).get().val()
         if details:
-            details = dict(details)
-            for key, value in details.items():
-                user_id = details.get(key).get("agentAssigned")
-                # function to get agent details.
-                details[key]["agentDetails"] = get_profile_details(features.get_unique_name_for_document(user_id)) or {}
-                payload.append(details[key])
+            payload = list(dict(details).values())
             return payload
+        # payload = []
+        # if details:
+        #     details = dict(details)
+        #     for key, value in details.items():
+        #         user_id = details.get(key).get("agentAssigned", "")
+        #         # function to get agent details.
+        #         details[key]["agentDetails"] = agents[features.get_unique_name_for_document(user_id)]
+        #         payload.append(details[key])
+        #     return payload
     except Exception as e:
         print(e)
-    return None
+    return []
 
 
 def get_offender_details(client_id):
@@ -269,12 +271,12 @@ def update_user_password(email, new_password):
         # Update the user's password using the Firebase Admin SDK
         auth.update_user(uid, password=new_password)
         print(f"Password changed successfully for user {uid}.")
-        user = database.child("Users").child(features.get_unique_name_for_document(email)).update(
-            {"password": new_password})
-        return dict(user)
+        user = database.child("Users").child(features.get_unique_name_for_document(email)).get().val()
+        if user:
+            return dict(user)
     except Exception as e:
         print(f"Error changing password: {e}")
-        return False
+    return {}
 
 
 def update_admin_role(admin_id, role_status):
@@ -293,8 +295,6 @@ def update_admin_role(admin_id, role_status):
         user = database.child("Users").child(admin_id).update({"role": role_status, "roleName": role_name})
         if user:
             return True
-        else:
-            return False
     except Exception as e:
         print(f"ERROR >>> {e}")
     return False
@@ -371,23 +371,23 @@ def user_search_by_query(query):
     the provided query.
     """
     results = []
+    query = str(query).lower()
     try:
         payload = database.child("Users").get().val()
         if payload:
             payload = list(dict(payload).values())
             for user in payload:
-                if query in user.get("firstName"):
+                if query in str(user.get("firstName", "")).lower():
                     results.append(user)
-                if query in user.get("lastName"):
+                if query in str(user.get("lastName", "")).lower():
                     results.append(user)
-                if query in user.get("email"):
+                if query in user.get("email", ""):
                     results.append(user)
-                if query in user.get("phoneNumber"):
+                if query in user.get("phoneNumber", ""):
                     results.append(user)
-                if query in user.get("userName"):
+                if query in str(user.get("userName")).lower():
                     results.append(user)
             results = features.filter_duplicates_from_dict(results, "email")
-            return results
     except Exception as e:
         print(f"ERROR SEARCH USER >>> {e}")
     return results
@@ -395,49 +395,49 @@ def user_search_by_query(query):
 
 def offender_search_by_query(query):
     results = []
+    query = str(query).lower()
     try:
         payload = database.child("Offenders").get().val()
         if payload:
             payload = list(dict(payload).values())
             for user in payload:
-                if query in user.get("firstName"):
+                if query in user.get("firstName").lower():
                     results.append(user)
-                if query in user.get("lastName"):
+                if query in user.get("lastName").lower():
                     results.append(user)
                 if query in user.get("emailAddress"):
                     results.append(user)
                 if query in user.get("phoneNumber"):
                     results.append(user)
-                if query in user.get("middleName"):
+                if query in user.get("middleName").lower():
                     results.append(user)
-                if query in user.get("maidenName"):
+                if query in user.get("maidenName").lower():
                     results.append(user)
                 if query in user.get("ssn"):
                     results.append(user)
             results = features.filter_duplicates_from_dict(results, "emailAddress")
-            return results
     except Exception as e:
         print(f"ERROR SEARCH USER >>> {e}")
     return results
 
 
-def get_assigned_clients(client_list):
-    try:
-        result = []
-        payload = database.child("Offenders").get().val()
-        if payload:
-            payload = dict(payload)
-        db_data = list(payload.keys())
-        for client in client_list:
-            if client in db_data:
-                # payload = dict(payload)
-                response = {
-                    "fullName": f"{payload[client].get('firstName', '')} {payload[client].get('middleName', '')} {payload[client].get('lastName', '')}",
-                    "emailAddress": payload[client].get("emailAddress", ""),
-                    "profilePic": payload[client].get("profilePic", "")
-                }
-                result.append(response)
-        return result
-    except Exception as e:
-        print(f"ERROR GET ASSIGNED CLIENTS >>> {e}")
-    return []
+# def get_assigned_clients(client_list):
+#     result = []
+#     try:
+#         payload = database.child("Offenders").get().val()
+#         if payload:
+#             payload = dict(payload)
+#         db_data = list(payload.keys())
+#         for client in client_list:
+#             if client in db_data:
+#                 # payload = dict(payload)
+#                 response = {
+#                     "fullName": f"{payload[client].get('firstName', '')} {payload[client].get('middleName', '')} {payload[client].get('lastName', '')}",
+#                     "emailAddress": payload[client].get("emailAddress", ""),
+#                     "profilePic": payload[client].get("profilePic", ""),
+#                     "uniqueId": payload[client].get("uniqueId", "")
+#                 }
+#                 result.append(response)
+#     except Exception as e:
+#         print(f"ERROR GET ASSIGNED CLIENTS >>> {e}")
+#     return result

@@ -442,23 +442,23 @@ def get_users_by_query():
     }
 
 
-@app.route("/user/get-assigned-clients", methods=["GET"])
-@authentication
-def get_user_assigned_clients():
-    payload = get_user_assigned_clients.payload.get("clientsAssigned")
-    if payload:
-        # db function to get assigned clients
-        response = db.get_assigned_clients(payload)
-        return {
-            "status": True,
-            "details": response,
-            "totalResults": len(response)
-        }
-    return {
-        "status": True,
-        "details": [],
-        "totalResults": 0
-    }
+# @app.route("/user/get-assigned-clients", methods=["GET"])
+# @authentication
+# def get_user_assigned_clients():
+#     payload = get_user_assigned_clients.payload.get("clientsAssigned")
+#     if payload:
+#         # db function to get assigned clients
+#         response = db.get_assigned_clients(payload)
+#         return {
+#             "status": True,
+#             "details": response,
+#             "totalResults": len(response)
+#         }
+#     return {
+#         "status": True,
+#         "details": [],
+#         "totalResults": 0
+#     }
 
 
 # *********************************** Offender End-points***********************************************
@@ -531,6 +531,7 @@ def add_new_offender():
     offender.personalDetails = offender.personalDetails
     offender.billingDetails = offender.billingDetails
     offender.guarantors = offender.guarantors
+    offender.braceletConnection = payload.get("braceletConnection", False)
 
     client = offender.__dict__
     code = db.add_offender_client(client)
@@ -560,7 +561,8 @@ def get_offenders():
     """
     # payload = request.args.to_dict()
     # db function to get all offenders array
-    offenders = db.get_offenders_details_list()
+    user_id = get_offenders.payload.get("email")
+    offenders = db.get_offenders_details_list(user_id)
     return {
         "status": True,
         "totalResults": len(offenders),
