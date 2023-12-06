@@ -1,5 +1,10 @@
 import jwt
 from datetime import datetime, timedelta
+import firebase_db_controller as db
+
+from flask import request
+
+secret_key = "0F53127e42354ze38D4024a9e2789a24"
 
 
 def getToken(email, password, key):
@@ -11,7 +16,7 @@ def getToken(email, password, key):
     :return:
     """
     try:
-        exp_time = int((datetime.now() + timedelta(hours=(24*15))).timestamp())
+        exp_time = int((datetime.now() + timedelta(hours=(24 * 15))).timestamp())
         token = jwt.encode({
             "email": email,
             "password": password,
@@ -40,4 +45,51 @@ def verify(token, key):
         return None
 
 
+def authentication(func):
+    """
+    This decorator is for token authentication.
+    :param func:
+    :return:
+    """
 
+    def authenticate(*args, **kwargs):
+        try:
+            try:
+                token = request.authorization.token
+            except Exception as e:
+                print(f"ERR ---- {e}")
+                return {
+                    "message": "Token Not Found",
+                    "status": False
+                }
+            # print({"token": token})
+            # print(token)
+            payload = verify(token, secret_key)  # Function to verify token.
+            if payload:
+                flag, data = db.login_user(
+                    payload)  # if token verified, then it will use the signature containing user
+                # credentials and get user-details
+                if flag:
+                    # print(payload)
+                    authenticate.payload = data
+                    return func(*args, **kwargs)
+                else:
+                    return {
+                        "message": "Invalid Credentials",
+                        "status": False
+                    }, 401
+            else:
+                return {
+                    "message": "invalid token",
+                    "status": False
+                }, 401
+        except Exception as e:
+            print(f"LOGIN ERROR >>> {e}")
+            return {
+                "message": "Error Occurred.",
+                "status": False
+            }
+
+    # to use the authentication decorator on multiple functions. it will rename the authenticate function.
+    authenticate.__name__ = func.__name__
+    return authenticate

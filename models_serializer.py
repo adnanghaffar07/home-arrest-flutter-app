@@ -68,10 +68,10 @@ class UserSerializer(Schema):
     lastName = fields.Str(required=False)
     userName = fields.Str(required=False)
     location = fields.Dict(required=False)
-    email = fields.Email(required=True)
+    email = fields.Email(required=False)
     gender = fields.Str(required=False)
     phoneNumber = fields.Str(required=False)
-    password = fields.Str(required=True)
+    password = fields.Str(required=False)
     profilePic = fields.Str(required=False)
     role = fields.Int(required=False)  # 1- Super User     2- Super Admin      3- Admin
     roleName = fields.Str(required=False)

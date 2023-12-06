@@ -65,6 +65,8 @@ def login_user(payload):
         auth2.sign_in_with_email_and_password(email, password)
         unique_id = features.get_unique_name_for_document(email)
         details = dict(database.child("Users").child(unique_id).get().val())
+        if not details.get("clientsAssigned"):
+            details["clientsAssigned"] = []
         return True, details
     except Exception as e:
         print(f"ERROR >>> {e}")
@@ -393,11 +395,11 @@ def user_search_by_query(query):
     return results
 
 
-def offender_search_by_query(query):
+def offender_search_by_query(query, agent_id):
     results = []
     query = str(query).lower()
     try:
-        payload = database.child("Offenders").get().val()
+        payload = database.child("Offenders").order_by_child("agentAssigned").equal_to(agent_id).get().val()
         if payload:
             payload = list(dict(payload).values())
             for user in payload:
