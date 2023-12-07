@@ -1,3 +1,6 @@
+import datetime
+import uuid
+
 import pyrebase
 from credentials import firebase_config
 import features
@@ -101,14 +104,16 @@ def add_offender_id_in_user_details(agent_id, offender_id):
             offenders_list = dict(offenders_list)
             print(offenders_list)
             if not offenders_list.get("clientsAssigned"):
-                client_list.append(offender_id)
-                database.child("Users").child(agent_id).update({"clientsAssigned": client_list})
+                if offender_id not in client_list:
+                    client_list.append(offender_id)
+                    database.child("Users").child(agent_id).update({"clientsAssigned": client_list})
                 return True
             elif offenders_list.get("clientsAssigned"):
                 client_list = list(offenders_list.get("clientsAssigned"))
                 print(client_list)
-                client_list.append(offender_id)
-                database.child("Users").child(agent_id).update({"clientsAssigned": client_list})
+                if offender_id not in client_list:
+                    client_list.append(offender_id)
+                    database.child("Users").child(agent_id).update({"clientsAssigned": client_list})
                 return True
     except Exception as e:
         print(f"ERROR ADD OFFENDER ID IN USER >>>> {e}")
@@ -321,7 +326,7 @@ def get_offenders_by_status(status):
     return []
 
 
-def add_user_profile_pic(user_name, image_path, field_name):
+def upload_image_on_firebase_storage(user_name, document_name, image_path, field_name):
     """
     This function will add and update profile pic path. Image is stored on the machine where API
     is deployed and the path is being updated in the Firebase Realtime database.
@@ -332,7 +337,7 @@ def add_user_profile_pic(user_name, image_path, field_name):
         image = dict(image)
         image_url = storage.child(image_path).get_url(token=image.get("downloadTokens"))
         print(image_url)
-        resp = database.child("Users").child(unique_id).update({field_name: image_url})
+        resp = database.child(document_name).child(unique_id).update({field_name: image_url})
         if resp:
             return True, image_url
     except Exception as e:
@@ -423,23 +428,31 @@ def offender_search_by_query(query, agent_id):
     return results
 
 
-# def get_assigned_clients(client_list):
-#     result = []
-#     try:
-#         payload = database.child("Offenders").get().val()
-#         if payload:
-#             payload = dict(payload)
-#         db_data = list(payload.keys())
-#         for client in client_list:
-#             if client in db_data:
-#                 # payload = dict(payload)
-#                 response = {
-#                     "fullName": f"{payload[client].get('firstName', '')} {payload[client].get('middleName', '')} {payload[client].get('lastName', '')}",
-#                     "emailAddress": payload[client].get("emailAddress", ""),
-#                     "profilePic": payload[client].get("profilePic", ""),
-#                     "uniqueId": payload[client].get("uniqueId", "")
-#                 }
-#                 result.append(response)
-#     except Exception as e:
-#         print(f"ERROR GET ASSIGNED CLIENTS >>> {e}")
-#     return result
+def add_request_checkin(payload, agent_id, offender_id):
+    try:
+        payload["requestedById"] = agent_id
+        payload["requestId"] = uuid.uuid4().hex
+        payload["requestTime"] = str(datetime.datetime.now())
+        payload["status"] = False
+        database.child("Offenders").child(offender_id).child("checkInRequest").push(payload)
+        return 200, payload
+        # if offender_data:
+        #     offender_data = list(offender_data)
+        #     print(offender_data)
+        #     payload["requestedById"] = agent_id
+        #     payload["requestId"] = uuid.uuid4().hex
+        #     payload["requestTime"] = str(datetime.datetime.now())
+        #     payload["status"] = False
+        #     offender_data.append(payload)
+        #     database.child("Offenders").child(offender_id).update({"checkInRequest": offender_data})
+        # else:
+        #     payload["requestedById"] = agent_id
+        #     payload["requestTime"] = str(datetime.datetime.now())
+        #     payload["requestId"] = uuid.uuid4().hex
+        #     payload["status"] = False
+        #     request_list = [payload]
+        #     database.child("Offenders").child(offender_id).update({"checkInRequest": request_list})
+        #     return 200, payload
+    except Exception as e:
+        print(f"REQUEST CHECKIN ERROR >>> {e}")
+    return 500, None

@@ -145,31 +145,28 @@ def get_users_by_query():
     return agent_controller.get_users_by_query(request)
 
 
-# @app.route("/user/get-assigned-clients", methods=["GET"])
-# @authentication
-# def get_user_assigned_clients():
-#     payload = get_user_assigned_clients.payload.get("clientsAssigned")
-#     if payload:
-#         # db function to get assigned clients
-#         response = db.get_assigned_clients(payload)
-#         return {
-#             "status": True,
-#             "details": response,
-#             "totalResults": len(response)
-#         }
-#     return {
-#         "status": True,
-#         "details": [],
-#         "totalResults": 0
-#     }
-
-
 @app.route("/user/update-location", methods=["POST"])
 def update_user_current_location():
     """
     This end-point will receive user's current location and update in the db.
     """
     return agent_controller.update_user_current_location(request)
+
+
+@app.route("/user/request-checkin", methods=["POST"])
+def request_checkin():
+    """
+    this end-point will add request in the db of the offender.
+    """
+    return agent_controller.request_checkin(request)
+
+
+@app.route("/user/add-signature", methods=["POST"])
+def add_signature():
+    """
+    this function will receive signature image and save it in the firebase storage.
+    """
+    return agent_controller.upload_signature(request)
 
 
 # *********************************** Offender End-points***********************************************

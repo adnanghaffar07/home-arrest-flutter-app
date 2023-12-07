@@ -2,7 +2,7 @@ import os
 import features
 from models_serializer import UserSerializer, Login
 import firebase_db_controller as db
-from authentication_system import verify, getToken, authentication
+from authentication_system import getToken, authentication
 
 secret_key = "0F53127e42354ze38D4024a9e2789a24"
 
@@ -29,6 +29,7 @@ def sign_up(request):
     payload["userName"] = payload.get("firstName", "") + " " + payload.get("lastName", "")
     payload["clientsAssigned"] = []
     payload["profilePic"] = ""
+    payload["signature"] = ""
     passwd = payload.get("password")
     if payload.get("role") == 1:
         payload["roleName"] = "super user"
@@ -249,7 +250,9 @@ def upload_profile_pic(request):
             print(rename_file)
             file.save(os.path.join(image_path, rename_file))
             # DB Function to update user-profile and add image path in profile
-            flag, image_url = db.add_user_profile_pic(user_name, f"{image_path}/{rename_file}", "profilePic")
+            flag, image_url = db.upload_image_on_firebase_storage(user_name, "Users",
+                                                                  f"{image_path}/{rename_file}",
+                                                                  "profilePic")
             if flag and image_url:
                 # to remove images from local storage after saving in firebase cloud storage.
                 os.remove(f"{image_path}/{rename_file}")
@@ -309,3 +312,81 @@ def update_user_current_location(request):
         "status": False,
         "message": "Something went wrong"
     }, status_code
+
+
+@authentication
+def request_checkin(request):
+    payload = request.get_json()
+    offender_id = payload.get("offenderId")
+    del payload["offenderId"]  # to remove field from payload.
+    agent_id = request_checkin.payload.get("uniqueId", "")
+    # db function to add request checkin in the db
+    status_code, response = db.add_request_checkin(payload, agent_id, offender_id)
+    if status_code == 200:
+        return {
+            "status": True,
+            "message": "request sent successfully...",
+            "details": response
+        }, status_code
+    return {
+        "status": False,
+        "message": "something went wrong...",
+        "details": response
+    }, status_code
+
+
+@authentication
+def upload_signature(request):
+    user_name = upload_signature.payload.get("email")
+    role_code = upload_signature.payload.get("role")
+    # Checking for Logged-in user role. Assigning folder according to user's type.
+    if role_code == 1:
+        user_type = "su"
+    elif role_code == 2:
+        user_type = "sa"
+    elif role_code == 3:
+        user_type = "admin"
+    else:  # Condition will return if user role is not in between 1-3.
+        return {
+            "status": False,
+            "message": "The user that is logged in contains the user-type which is not registered. kindly check what's wrong."
+        }, 401
+    try:
+        if 'image' in request.files:
+            image_path = f"static/profiles/{user_type}/{user_name}/signature"
+            if not os.path.exists(image_path):
+                os.makedirs(image_path)
+            file = request.files['image']
+            filename = file.filename
+            rename_file = features.file_rename(filename.split(".")[1], user_name)  # function for renaming file.
+            print(rename_file)
+            file.save(os.path.join(image_path, rename_file))
+            # DB Function to update user-profile and add image path in profile
+            flag, image_url = db.upload_image_on_firebase_storage(user_name,
+                                                                  "Users",
+                                                                  f"{image_path}/{rename_file}",
+                                                                  "signature")
+            if flag and image_url:
+                # to remove images from local storage after saving in firebase cloud storage.
+                os.remove(f"{image_path}/{rename_file}")
+                # os.removedirs(image_path)
+                return {
+                    "status": True,
+                    "message": "profile pic saved successfully.",
+                    "signature": f"{image_url}"
+                }
+            else:
+                return {
+                    "status": False,
+                    "message": "Error Occurred"
+                }, 500
+        return {
+            "status": False,
+            "message": "image not found"
+        }, 404
+    except Exception as e:
+        print(f"ERROR >>> {e}")
+        return {
+            "status": False,
+            "message": "Error Occurred"
+        }, 500

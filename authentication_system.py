@@ -1,7 +1,7 @@
 import jwt
 from datetime import datetime, timedelta
 import firebase_db_controller as db
-
+from functools import wraps
 from flask import request
 
 secret_key = "0F53127e42354ze38D4024a9e2789a24"
@@ -51,7 +51,7 @@ def authentication(func):
     :param func:
     :return:
     """
-
+    @wraps(func)
     def authenticate(*args, **kwargs):
         try:
             try:
@@ -91,5 +91,5 @@ def authentication(func):
             }
 
     # to use the authentication decorator on multiple functions. it will rename the authenticate function.
-    authenticate.__name__ = func.__name__
+    # authenticate.__name__ = func.__name__
     return authenticate

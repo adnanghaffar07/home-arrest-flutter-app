@@ -1,8 +1,3 @@
-import datetime
-
-from marshmallow import Schema, fields
-
-
 class Offender:
     """
         Offender client model.
@@ -124,5 +119,13 @@ class Offender:
         "paymentFrequency": "",
         "thirdPartyPay": False,
         "thirdParty": ""
+    }
+    checkInRequest = {
+        "requestId": "489qy2j98q4",
+        "requestType": "image",  # 1- image  2- video    3- pin
+        "requestTime": "",  # time of request sent
+        "deadline": "",  # time limit for checkin
+        "status": False,
+        "requestedById": "something@anything_com"  # unique Id
     }
     guarantors = ""
