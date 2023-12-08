@@ -1,8 +1,8 @@
 from flask_cors import CORS
 from flask import Flask, request
 import agent_controller
+import client_controller
 import offender_controller
-from authentication_system import *
 from flask_smorest import Blueprint
 
 app = Flask(__name__)
@@ -169,6 +169,22 @@ def add_signature():
     return agent_controller.upload_signature(request)
 
 
+@app.route("/user/get-alerts", methods=["GET"])
+def get_alerts():
+    """
+    Function will set alerts in the payload.
+    """
+    return agent_controller.get_alerts(request)
+
+
+@app.route("/user/change-alert-status", methods=["GET"])
+def change_alert_status():
+    """
+    Function will set alerts in the payload.
+    """
+    return agent_controller.change_alert_status(request)
+
+
 # *********************************** Offender End-points***********************************************
 @app.route("/clients/new-offender", methods=["POST"])
 def add_new_offender():
@@ -233,6 +249,32 @@ def get_offenders_by_query():
     Function to search offender based on offender details like first name, last name etc.
     """
     return offender_controller.get_offenders_by_query(request)
+
+
+@app.route("/offender/profile-pic", methods=["POST"])
+def update_offender_profile_pic():
+    """
+    Function will save offenders profile pic onto  firebase storage.
+    """
+    return offender_controller.update_offender_profile_pic(request)
+
+
+@app.route("/offender/update-signature", methods=["POST"])
+def update_offender_signature():
+    """
+    Function will save offenders profile pic onto  firebase storage.
+    """
+    return offender_controller.update_offender_signature(request)
+
+
+# ************************************************** Client App End-points **************************************************
+
+@app.route("/client/set-alert", methods=["POST"])
+def set_alerts():
+    """
+    Function will set alerts in the payload.
+    """
+    return client_controller.set_alerts()
 
 
 if __name__ == '__main__':

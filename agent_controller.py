@@ -259,7 +259,7 @@ def upload_profile_pic(request):
                 # os.removedirs(image_path)
                 return {
                     "status": True,
-                    "message": "profile pic saved successfully.",
+                    "message": "Signature saved successfully.",
                     "profilePic": f"{image_url}"
                 }
             else:
@@ -390,3 +390,32 @@ def upload_signature(request):
             "status": False,
             "message": "Error Occurred"
         }, 500
+
+
+@authentication
+def get_alerts(request):
+    offenders_list = get_alerts.payload.get("clientsAssigned")
+    print(offenders_list)
+    # db function to get the list of alerts
+    if offenders_list:
+        payload = db.get_alerts_from_db(offenders_list)
+        return {
+            "status": True,
+            "alerts": payload,
+            "totalAlerts": len(payload)
+        }
+
+
+def change_alert_status(request):
+    alert_id = request.args.to_dict().get("alertId")
+    unique_id = request.args.to_dict().get("uniqueId")
+    # db function to change read status
+    if db.change_alert_read_status(alert_id, unique_id):
+        return {
+            "status": True,
+            "message": "Alert read successfully..."
+        }
+    return {
+        "status": False,
+        "message": "something went wrong..."
+    }, 500

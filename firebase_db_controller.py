@@ -456,3 +456,54 @@ def add_request_checkin(payload, agent_id, offender_id):
     except Exception as e:
         print(f"REQUEST CHECKIN ERROR >>> {e}")
     return 500, None
+
+
+def set_alerts_in_db(payload, user_id):
+    try:
+        response = database.child("Alerts").child(user_id).push(payload)
+        if response:
+            return True
+    except Exception as e:
+        print(f"ERROR SETTING ALERTS >>> {e}")
+    return False
+
+
+def get_alerts_from_db(offender_list):
+    alerts = []
+    try:
+        response = database.child("Alerts").get().val()
+        offenders_details = database.child("Offenders").get().val()
+        if offenders_details:
+            offenders_details = dict(offenders_details)
+        if response:
+            response = dict(response)
+            print(response)
+            for offender in offender_list:
+                if response.get(offender):
+                    offender_response = response.get(offender, {})
+                    payload = {
+                        "fullName": f"{offenders_details.get(offender).get('firstName')} {offenders_details.get(offender).get('lastName')}",
+                        "uniqueId": f"{offenders_details.get(offender).get('uniqueId')}",
+                        "profilePic": f"{offenders_details.get(offender).get('profilePic')}",
+                        "alerts": list(offender_response.values())[::-1]
+                    }
+                    alerts.append(payload)
+    except Exception as e:
+        print(f"ERROR GETTING ALERTS >>> {e}")
+    return alerts
+
+
+def change_alert_read_status(alert_id, unique_id):
+    try:
+        resp = database.child("Alerts").child(unique_id).get().val()
+        if resp:
+            resp = dict(resp)
+            print(resp)
+            for key, alert in resp.items():
+                if resp[key]["alertId"] == alert_id:
+                    resp[key]["readStatus"] = True
+                    database.child("Alerts").child(unique_id).update(resp)
+            return True
+    except Exception as e:
+        print(f"ERROR CHANGING ALERT READ STATUS >>> {e}")
+    return False

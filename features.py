@@ -122,3 +122,8 @@ def filter_duplicates_from_dict(data_list, key_name):
             seen_values.add(current_value)
             filtered_list.append(data)
     return filtered_list
+
+
+def sort_by_dict_keys(response, key):
+    sorted_response = sorted(response, key=lambda x: x[key])
+    return sorted_response

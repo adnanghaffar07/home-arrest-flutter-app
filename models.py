@@ -14,7 +14,7 @@ class Offender:
     sentenceStartDate: str
     sentenceEndDate: str
     checkIn: str
-    monitorLevel: str
+    monitorLevel: int       # 1- Low    2- Medium   3- High
     location = {
         "lat": 31.47601069443745,
         "lng": 74.30950803039627
@@ -39,6 +39,13 @@ class Offender:
         "late": 0,
         "voluntaryCheckins": 0
     }
+    notificationAlerts = {
+        "alertId": "ds9fuh948ywjdh",
+        "description": "",
+        "uniqueId": "any@sam_com",       # Unique ID of the user
+        "timestamp": "timestamp",
+        "readStatus": False
+    }
     courtAppearances = {
         "monitoringPeriod": "20-03-2023",
         "totalCheckins": 0,
@@ -53,6 +60,7 @@ class Offender:
         "description": "Voluntary Check-in Request"
     }]
     pinNumber = ""
+    signature = ""
     braceletName = ""
     braceletVersion = ""
     breathalyzer = []

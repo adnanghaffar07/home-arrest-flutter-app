@@ -17,7 +17,7 @@ class OffenderSerializer(Schema):
     sentenceStartDate = fields.Str(required=False)
     sentenceEndDate = fields.Str(required=False)
     checkIn = fields.Str(required=False)
-    monitorLevel = fields.Str(required=False)
+    monitorLevel = fields.Int(required=False)       # 1- Low    2- Medium   3- High
     location = fields.Dict(required=False)
     agentAssigned = fields.Str(required=False)
     dateOfEntry = fields.Str(required=False)
@@ -41,6 +41,7 @@ class OffenderSerializer(Schema):
     monitoringInformation = fields.Str(required=False)
     monitoringFrequency = fields.Str(required=False)
     monitorTime = fields.Str(required=False)
+    signature = fields.Str(required=False)
     photoCheckIn = fields.Bool(required=False)
     videoCheckIn = fields.Bool(required=False)
     sobrietyCheckIn = fields.Bool(required=False)

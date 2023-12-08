@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 import features
@@ -20,6 +21,7 @@ def get_offenders(request):
     # db function to get all offenders array
     user_id = get_offenders.payload.get("email")
     offenders = db.get_offenders_details_list(user_id)
+    offenders = features.sort_by_dict_keys(offenders, "monitorLevel")
     return {
         "status": True,
         "totalResults": len(offenders),
@@ -67,6 +69,8 @@ def add_new_offender(request):
     offender.dateOfEntry = str(datetime.now())
     offender.addedBy = add_new_offender.payload.get("email", "")
     offender.scoreCard = payload.get("scoreCard", offender.scoreCard)
+    offender.signature = ""
+    offender.profilePic = ""
     offender.recentAlerts = payload.get("recentAlerts", offender.recentAlerts)
     offender.courtAppearances = payload.get("courtAppearances", offender.courtAppearances)
     offender.checkInDetails = payload.get("checkInDetails", offender.checkInDetails)
@@ -224,3 +228,90 @@ def get_offenders_by_query(request):
         "details": results,
         "totalResults": len(results)
     }
+
+
+@authentication
+def update_offender_profile_pic(request):
+    offender_id = request.form.get("uniqueId")
+    try:
+        if 'image' in request.files:
+            image_path = f"static/offender_profiles/{offender_id}/profile_pic"
+            if not os.path.exists(image_path):
+                os.makedirs(image_path)
+            file = request.files['image']
+            filename = file.filename
+            rename_file = features.file_rename(filename.split(".")[1], offender_id)  # function for renaming file.
+            print(rename_file)
+            file.save(os.path.join(image_path, rename_file))
+            # DB Function to update user-profile and add image path in profile
+            flag, image_url = db.upload_image_on_firebase_storage(offender_id,
+                                                                  "Offenders",
+                                                                  f"{image_path}/{rename_file}",
+                                                                  "profilePic")
+            if flag and image_url:
+                # to remove images from local storage after saving in firebase cloud storage.
+                os.remove(f"{image_path}/{rename_file}")
+                # os.removedirs(image_path)
+                return {
+                    "status": True,
+                    "message": "profile pic saved successfully.",
+                    "signature": f"{image_url}"
+                }
+            else:
+                return {
+                    "status": False,
+                    "message": "Error Occurred"
+                }, 500
+        return {
+            "status": False,
+            "message": "image not found"
+        }, 404
+    except Exception as e:
+        print(f"ERROR >>> {e}")
+        return {
+            "status": False,
+            "message": "Error Occurred"
+        }, 500
+
+
+def update_offender_signature(request):
+    offender_id = request.form.get("uniqueId")
+    try:
+        if 'image' in request.files:
+            image_path = f"static/offender_profiles/{offender_id}/signature"
+            if not os.path.exists(image_path):
+                os.makedirs(image_path)
+            file = request.files['image']
+            filename = file.filename
+            rename_file = features.file_rename(filename.split(".")[1], offender_id)  # function for renaming file.
+            print(rename_file)
+            file.save(os.path.join(image_path, rename_file))
+            # DB Function to update user-profile and add image path in profile
+            flag, image_url = db.upload_image_on_firebase_storage(offender_id,
+                                                                  "Offenders",
+                                                                  f"{image_path}/{rename_file}",
+                                                                  "signature")
+            if flag and image_url:
+                # to remove images from local storage after saving in firebase cloud storage.
+                os.remove(f"{image_path}/{rename_file}")
+                # os.removedirs(image_path)
+                return {
+                    "status": True,
+                    "message": "profile pic saved successfully.",
+                    "signature": f"{image_url}"
+                }
+            else:
+                return {
+                    "status": False,
+                    "message": "Error Occurred"
+                }, 500
+        return {
+            "status": False,
+            "message": "image not found"
+        }, 404
+    except Exception as e:
+        print(f"ERROR >>> {e}")
+        return {
+            "status": False,
+            "message": "Error Occurred"
+        }, 500
