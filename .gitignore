@@ -8,3 +8,4 @@ testing_lab.py
 db_operations.py
 /static
 cred.json
+/client/__pycache__

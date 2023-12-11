@@ -14,7 +14,7 @@ class Offender:
     sentenceStartDate: str
     sentenceEndDate: str
     checkIn: str
-    monitorLevel: int       # 1- Low    2- Medium   3- High
+    monitorLevel: int  # 1- Low    2- Medium   3- High
     location = {
         "lat": 31.47601069443745,
         "lng": 74.30950803039627
@@ -42,7 +42,7 @@ class Offender:
     notificationAlerts = {
         "alertId": "ds9fuh948ywjdh",
         "description": "",
-        "uniqueId": "any@sam_com",       # Unique ID of the user
+        "uniqueId": "any@sam_com",  # Unique ID of the user
         "timestamp": "timestamp",
         "readStatus": False
     }
@@ -53,11 +53,13 @@ class Offender:
         "late": 0,
         "voluntaryCheckins": 0
     }
-    checkInDetails = [{
-        "requestID": "3435535",
-        "requestTime": "29-11-23",
-        "checkedInTime": "29-11-23",
-        "description": "Voluntary Check-in Request"
+    checkInRequest = [{
+        "requestType": "pin",
+        "checkinPin": "324324",
+        "requestTime": "",
+        "deadline": "",
+        "status": True,
+        "offenderId": "adnan@codeautomation_ai"
     }]
     pinNumber = ""
     signature = ""

@@ -84,6 +84,8 @@ def add_offender_client(client):
         unique_id = client.get("uniqueId", "")
         if if_entry_exists("Offenders", unique_id):
             return 403
+        # db function to create login authentication for offender.
+        register_offender_credentials(client.get("emailAddress"), "admin12345")
         details = dict(database.child("Offenders").child(unique_id).set(client))
         print(details)
         # function for updating user details.
@@ -94,6 +96,15 @@ def add_offender_client(client):
     except Exception as e:
         print("ADD OFFENDER ERROR >>> ", e)
     return 500
+
+
+def register_offender_credentials(email, password):
+    try:
+        auth2.create_user_with_email_and_password(email, password)
+        return True
+    except Exception as e:
+        print(f"OFFENDER REGISTER ERROR >>> {e}")
+    return False
 
 
 def add_offender_id_in_user_details(agent_id, offender_id):
@@ -458,16 +469,6 @@ def add_request_checkin(payload, agent_id, offender_id):
     return 500, None
 
 
-def set_alerts_in_db(payload, user_id):
-    try:
-        response = database.child("Alerts").child(user_id).push(payload)
-        if response:
-            return True
-    except Exception as e:
-        print(f"ERROR SETTING ALERTS >>> {e}")
-    return False
-
-
 def get_alerts_from_db(offender_list):
     alerts = []
     try:
@@ -507,3 +508,29 @@ def change_alert_read_status(alert_id, unique_id):
     except Exception as e:
         print(f"ERROR CHANGING ALERT READ STATUS >>> {e}")
     return False
+
+
+def get_checkin_history(client_list):
+    results = []
+    print(client_list)
+    try:
+        payload = database.child("Offenders").get().val()
+        if payload:
+            payload = dict(payload)
+            print(payload.get("demo@codeautomation_ai").get("checkInRequest"))
+            for client in client_list:
+                print(client)
+                if len(list(dict(payload.get(client).get("checkInRequest", {})).values())) > 0:
+                    print(list(dict(payload.get(client).get("checkInRequest", {})).values()))
+                    custom_payload = {
+                        "fullName": f"{payload.get(client).get('firstName')} {payload.get(client).get('lastName')}",
+                        "uniqueId": payload.get(client).get("uniqueId"),
+                        "profilePic": payload.get(client).get("profilePic"),
+                        "checkInRequest": list(dict(payload.get(client).get("checkInRequest", {})).values())
+                    }
+                    results.append(custom_payload)
+    except Exception as e:
+        print(f"ERROR CHECKIN HISTORY >>> {e}")
+    return results
+
+

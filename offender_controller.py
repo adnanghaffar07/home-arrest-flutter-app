@@ -21,7 +21,7 @@ def get_offenders(request):
     # db function to get all offenders array
     user_id = get_offenders.payload.get("email")
     offenders = db.get_offenders_details_list(user_id)
-    offenders = features.sort_by_dict_keys(offenders, "monitorLevel")
+    offenders = features.sort_by_dict_keys(offenders, "monitorLevel")[::-1]
     return {
         "status": True,
         "totalResults": len(offenders),
@@ -73,7 +73,7 @@ def add_new_offender(request):
     offender.profilePic = ""
     offender.recentAlerts = payload.get("recentAlerts", offender.recentAlerts)
     offender.courtAppearances = payload.get("courtAppearances", offender.courtAppearances)
-    offender.checkInDetails = payload.get("checkInDetails", offender.checkInDetails)
+    offender.checkInRequest = payload.get("checkInRequest", {})
     offender.pinNumber = offender.pinNumber
     offender.braceletName = offender.braceletName
     offender.braceletVersion = offender.braceletVersion
@@ -315,3 +315,16 @@ def update_offender_signature(request):
             "status": False,
             "message": "Error Occurred"
         }, 500
+
+
+@authentication
+def get_checkin_history(request):
+    client_list = get_checkin_history.payload.get("clientsAssigned", [])
+    # db function to get history of clients assigned
+    data = db.get_checkin_history(client_list)
+    return {
+        "status": True,
+        "data": data,
+        "totalResults": len(data)
+    }, 200
+

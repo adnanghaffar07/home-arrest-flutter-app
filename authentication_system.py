@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import firebase_db_controller as db
 from functools import wraps
 from flask import request
-
+import client.client_db as client_db
 secret_key = "0F53127e42354ze38D4024a9e2789a24"
 
 
@@ -51,6 +51,7 @@ def authentication(func):
     :param func:
     :return:
     """
+
     @wraps(func)
     def authenticate(*args, **kwargs):
         try:
@@ -67,6 +68,58 @@ def authentication(func):
             payload = verify(token, secret_key)  # Function to verify token.
             if payload:
                 flag, data = db.login_user(
+                    payload)  # if token verified, then it will use the signature containing user
+                # credentials and get user-details
+                if flag:
+                    # print(payload)
+                    authenticate.payload = data
+                    return func(*args, **kwargs)
+                else:
+                    return {
+                        "message": "Invalid Credentials",
+                        "status": False
+                    }, 401
+            else:
+                return {
+                    "message": "invalid token",
+                    "status": False
+                }, 401
+        except Exception as e:
+            print(f"LOGIN ERROR >>> {e}")
+            return {
+                "message": "Error Occurred.",
+                "status": False
+            }
+
+    # to use the authentication decorator on multiple functions. it will rename the authenticate function.
+    # authenticate.__name__ = func.__name__
+    return authenticate
+
+
+# Client Authentication Decorator.
+def client_authentication(func):
+    """
+    This decorator is for token authentication.
+    :param func:
+    :return:
+    """
+
+    @wraps(func)
+    def authenticate(*args, **kwargs):
+        try:
+            try:
+                token = request.authorization.token
+            except Exception as e:
+                print(f"ERR ---- {e}")
+                return {
+                    "message": "Token Not Found",
+                    "status": False
+                }
+            # print({"token": token})
+            # print(token)
+            payload = verify(token, secret_key)  # Function to verify token.
+            if payload:
+                flag, data = client_db.login_user(
                     payload)  # if token verified, then it will use the signature containing user
                 # credentials and get user-details
                 if flag:
