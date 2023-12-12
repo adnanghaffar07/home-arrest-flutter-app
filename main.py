@@ -293,6 +293,33 @@ def client_login():
     return client_controller.client_login()
 
 
+@app.route("/client/profile", methods=["GET"])
+def get_client_profile_details():
+    """
+    This end-point will return the profile details of the client
+    """
+    return client_controller.get_client_profile_details()
+
+
+@app.route("/client/update-profile-pic", methods=["POST"])
+def update_client_profile_pic():
+    """
+    This function will save profile pic of client in firebase storage.
+    """
+    return client_controller.update_client_profile_pic()
+
+
+@app.route("/client/upload-document", methods=["POST"])
+def upload_client_document():
+    """
+    This end-point will receive document of the client and store it on firebase storage.
+    This end-point content type is multipart/form
+    """
+    return client_controller.upload_document()
+
+
+
+
 @app.route("/client/check-in-requests", methods=["GET"])
 def get_client_checkin_request():
     """

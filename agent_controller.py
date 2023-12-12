@@ -30,6 +30,53 @@ def sign_up(request):
     payload["clientsAssigned"] = []
     payload["profilePic"] = ""
     payload["signature"] = ""
+    payload["address1"] = ""
+    payload["address2"] = ""
+    payload["country"] = ""
+    payload["state"] = ""
+    payload["dailyReport"] = True
+    payload["notifications"] = {
+        "authentication": {
+            "email": True,
+            "pushNotification": True
+        },
+        "braceletConnection": {
+            "email": True,
+            "pushNotification": True
+        },
+        "braceletBattery": {
+            "email": True,
+            "pushNotification": True
+        },
+        "exclusionZone": {
+            "email": True,
+            "pushNotification": True
+        },
+        "gpsLocation": {
+            "email": True,
+            "pushNotification": True
+        },
+        "missing": {
+            "email": True,
+            "pushNotification": True
+        },
+        "noReply": {
+            "email": True,
+            "pushNotification": True
+        },
+        "outsideZone": {
+            "email": True,
+            "pushNotification": True
+        },
+        "phoneBattery": {
+            "email": True,
+            "pushNotification": True
+        },
+        "sobriety": {
+            "email": True,
+            "pushNotification": True
+        }
+    }
     passwd = payload.get("password")
     if payload.get("role") == 1:
         payload["roleName"] = "super user"
@@ -100,9 +147,9 @@ def update_profile(request):
             "status": False,
             "message": "invalid input fields"
         }, 422
-    email = update_profile.payload.get("email")
+    unique_id = update_profile.payload.get("uniqueId")
     # DB function to update user profile details.
-    resp = db.update_user_profile_details(payload, email)
+    resp = db.update_user_profile_details(payload, unique_id)
     if resp:
         return {
             "status": True,
@@ -259,7 +306,7 @@ def upload_profile_pic(request):
                 # os.removedirs(image_path)
                 return {
                     "status": True,
-                    "message": "Signature saved successfully.",
+                    "message": "profile saved successfully.",
                     "profilePic": f"{image_url}"
                 }
             else:

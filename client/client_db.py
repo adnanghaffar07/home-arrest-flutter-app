@@ -1,6 +1,7 @@
 import pyrebase
 from credentials import firebase_config
 import features
+
 # import firebase_admin
 # from firebase_admin import credentials, auth
 
@@ -27,25 +28,89 @@ def login_user(payload):
     try:
         auth2.sign_in_with_email_and_password(email, password)
         unique_id = features.get_unique_name_for_document(email)
-        details = dict(database.child("Offenders").child(unique_id).get().val())
-        # payload = {
-        #     "firstName": details.get("firstName"),
-        #     "middleName": details.get("middleName"),
-        #     "lastName": details.get("lastName"),
-        #     "maidenName": details.get("maidenName"),
-        #     "emailAddress": details.get("emailAddress"),
-        #     "active": details.get("active"),
-        #     "profilePic": details.get("profilePic"),
-        #     "braceletConnection": details.get("braceletConnection"),
-        #     "dateOfBirth": details.get("dateOfBirth"),
-        #     "personalDetails": details.get("personalDetails"),
-        #     "phoneNumber": details.get("phoneNumber"),
-        #     "signature": details.get("signature"),
-        #     "uniqueId": details.get("uniqueId"),
-        # }
-        return True, details
+        details = database.child("Offenders").child(unique_id).get().val()
+        if details:
+            details = dict(details)
+            # payload = {
+            #     "firstName": details.get("firstName"),
+            #     "middleName": details.get("middleName"),
+            #     "lastName": details.get("lastName"),
+            #     "maidenName": details.get("maidenName"),
+            #     "emailAddress": details.get("emailAddress"),
+            #     "active": details.get("active"),
+            #     "profilePic": details.get("profilePic"),
+            #     "braceletConnection": details.get("braceletConnection"),
+            #     "dateOfBirth": details.get("dateOfBirth"),
+            #     "personalDetails": details.get("personalDetails"),
+            #     "phoneNumber": details.get("phoneNumber"),
+            #     "signature": details.get("signature"),
+            #     "uniqueId": details.get("uniqueId"),
+            # }
+            return True, details
     except Exception as e:
         print(f"ERROR >>> {e}")
+    return False, None
+
+
+def get_client_profile(unique_id):
+    try:
+        details = database.child("Offenders").child(unique_id).get().val()
+        if details:
+            details = dict(details)
+            payload = {
+                "firstName": details.get("firstName"),
+                "middleName": details.get("middleName"),
+                "lastName": details.get("lastName"),
+                "maidenName": details.get("maidenName"),
+                "emailAddress": details.get("emailAddress"),
+                "active": details.get("active"),
+                "profilePic": details.get("profilePic"),
+                "braceletConnection": details.get("braceletConnection"),
+                "dateOfBirth": details.get("dateOfBirth"),
+                "personalDetails": details.get("personalDetails"),
+                "phoneNumber": details.get("phoneNumber"),
+                "signature": details.get("signature"),
+                "uniqueId": details.get("uniqueId"),
+            }
+            return payload
+    except Exception as e:
+        print(f"ERROR CLIENT PROFILE DB >>> {e}")
+    return None
+
+
+def upload_image_on_firebase_storage(user_name, document_name, image_path, field_name):
+    """
+    This function will add and update profile pic path. Image is stored on the machine where API
+    is deployed and the path is being updated in the Firebase Realtime database.
+    """
+    try:
+        unique_id = features.get_unique_name_for_document(user_name)
+        image = storage.child(image_path).put(image_path)
+        image = dict(image)
+        image_url = storage.child(image_path).get_url(token=image.get("downloadTokens"))
+        print(image_url)
+        resp = database.child(document_name).child(unique_id).update({field_name: image_url})
+        if resp:
+            return True, image_url
+    except Exception as e:
+        print(f"PROFILE PIC EXCEPTION >>> {e}")
+    return False, None
+
+
+def upload_document_on_storage(user_name, document_name, document_path, field_name, document_type):
+    try:
+        unique_id = features.get_unique_name_for_document(user_name)
+        doc = storage.child(document_path).put(document_path)
+        doc = dict(doc)
+        doc_url = storage.child(document_path).get_url(token=doc.get("downloadTokens"))
+        print(doc_url)
+        resp = database.child(document_name).child(unique_id).child(field_name).push({"documentUrl": doc_url,
+                                                                                      "documentType": document_type
+                                                                                      })
+        if resp:
+            return True, doc_url
+    except Exception as e:
+        print(f"PROFILE PIC EXCEPTION >>> {e}")
     return False, None
 
 
@@ -80,7 +145,8 @@ def pin_checkin(request_id, pin, unique_id):
                 if checkin_request.get("requestId") == request_id:
                     if checkin_request.get("checkinPin") == pin:
                         checkin_request["status"] = True
-                        database.child("Offenders").child(unique_id).child("checkInRequest").child(key).update(checkin_request)
+                        database.child("Offenders").child(unique_id).child("checkInRequest").child(key).update(
+                            checkin_request)
                         return 200
                     else:
                         print(checkin_request)

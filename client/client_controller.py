@@ -2,12 +2,13 @@
     This file contains the functions for client application.
 """
 import datetime
+import os
 import uuid
 from flask import request
 import client.client_db as db
+import features
 from authentication_system import getToken, client_authentication
-
-secret_key = "0F53127e42354ze38D4024a9e2789a24"
+from credentials import secret_key
 
 
 @client_authentication
@@ -45,6 +46,115 @@ def client_login():
             "message": "Invalid Credentials",
             "status": False
         }, 401
+
+
+@client_authentication
+def get_client_profile_details():
+    try:
+        unique_id = get_client_profile_details.payload.get("uniqueId")
+        payload = db.get_client_profile(unique_id)
+        if payload:
+            return {
+                "status": True,
+                "details": payload
+            }, 200
+
+    except Exception as e:
+        print(f"ERROR CLIENT PROFILE DETAILS >>>> {e}")
+    return {
+        "status": False,
+        "message": "Something went wrong..."
+    }, 500
+
+
+@client_authentication
+def update_client_profile_pic():
+    offender_id = update_client_profile_pic.payload.get("uniqueId")
+    try:
+        if 'image' in request.files:
+            image_path = f"static/offender_profiles/{offender_id}/profile_pic"
+            if not os.path.exists(image_path):
+                os.makedirs(image_path)
+            file = request.files['image']
+            filename = file.filename
+            rename_file = features.file_rename(filename.split(".")[1], offender_id)  # function for renaming file.
+            print(rename_file)
+            file.save(os.path.join(image_path, rename_file))
+            # DB Function to update user-profile and add image path in profile
+            flag, image_url = db.upload_image_on_firebase_storage(offender_id,
+                                                                  "Offenders",
+                                                                  f"{image_path}/{rename_file}",
+                                                                  "profilePic")
+            if flag and image_url:
+                # to remove images from local storage after saving in firebase cloud storage.
+                os.remove(f"{image_path}/{rename_file}")
+                # os.removedirs(image_path)
+                return {
+                    "status": True,
+                    "message": "Signature saved successfully.",
+                    "signature": f"{image_url}"
+                }
+            else:
+                return {
+                    "status": False,
+                    "message": "Error Occurred"
+                }, 500
+        return {
+            "status": False,
+            "message": "image not found"
+        }, 404
+    except Exception as e:
+        print(f"ERROR >>> {e}")
+        return {
+            "status": False,
+            "message": "Error Occurred"
+        }, 500
+
+
+@client_authentication
+def upload_document():
+    offender_id = upload_document.payload.get("uniqueId")
+    document_type = request.form.get("documentName", "document")
+    try:
+        if 'document' in request.files:
+            image_path = f"static/offender_profiles/{offender_id}/documents"
+            if not os.path.exists(image_path):
+                os.makedirs(image_path)
+            file = request.files['document']
+            filename = file.filename
+            rename_file = features.file_rename(filename.split(".")[1],
+                                               f"{offender_id}_{document_type}")  # function for renaming file.
+            print(rename_file)
+            file.save(os.path.join(image_path, rename_file))
+            # DB Function to update user-profile and add image path in profile
+            flag, image_url = db.upload_document_on_storage(offender_id,
+                                                            "Offenders",
+                                                            f"{image_path}/{rename_file}",
+                                                            "document", document_type)
+            if flag and image_url:
+                # to remove images from local storage after saving in firebase cloud storage.
+                os.remove(f"{image_path}/{rename_file}")
+                # os.removedirs(image_path)
+                return {
+                    "status": True,
+                    "message": "Document saved successfully.",
+                    "document": f"{image_url}"
+                }
+            else:
+                return {
+                    "status": False,
+                    "message": "Error Occurred"
+                }, 500
+        return {
+            "status": False,
+            "message": "Document not found"
+        }, 404
+    except Exception as e:
+        print(f"ERROR >>> {e}")
+        return {
+            "status": False,
+            "message": "Error Occurred"
+        }, 500
 
 
 @client_authentication

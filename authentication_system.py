@@ -4,7 +4,7 @@ import firebase_db_controller as db
 from functools import wraps
 from flask import request
 import client.client_db as client_db
-secret_key = "0F53127e42354ze38D4024a9e2789a24"
+from credentials import secret_key
 
 
 def getToken(email, password, key):

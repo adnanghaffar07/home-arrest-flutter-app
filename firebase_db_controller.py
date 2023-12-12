@@ -208,13 +208,12 @@ def get_offender_details(client_id):
     return None
 
 
-def update_user_profile_details(payload, email):
+def update_user_profile_details(payload, unique_id):
     """
     This function will take two parameters i.e., payload and email address of the user.
     This function will update user profile details.
     """
     try:
-        unique_id = features.get_unique_name_for_document(email)
         user = database.child("Users").child(unique_id).update(payload)
         print(user)
         return payload
@@ -517,18 +516,18 @@ def get_checkin_history(client_list):
         payload = database.child("Offenders").get().val()
         if payload:
             payload = dict(payload)
-            print(payload.get("demo@codeautomation_ai").get("checkInRequest"))
+            # print(payload.get("demo@codeautomation_ai").get("checkInRequest"))
             for client in client_list:
-                print(client)
-                if len(list(dict(payload.get(client).get("checkInRequest", {})).values())) > 0:
-                    print(list(dict(payload.get(client).get("checkInRequest", {})).values()))
-                    custom_payload = {
-                        "fullName": f"{payload.get(client).get('firstName')} {payload.get(client).get('lastName')}",
-                        "uniqueId": payload.get(client).get("uniqueId"),
-                        "profilePic": payload.get(client).get("profilePic"),
-                        "checkInRequest": list(dict(payload.get(client).get("checkInRequest", {})).values())
-                    }
-                    results.append(custom_payload)
+                if not client:
+                    if len(list(dict(payload.get(client).get("checkInRequest", {})).values())) > 0:
+                        print(list(dict(payload.get(client).get("checkInRequest", {})).values()))
+                        custom_payload = {
+                            "fullName": f"{payload.get(client).get('firstName')} {payload.get(client).get('lastName')}",
+                            "uniqueId": payload.get(client).get("uniqueId"),
+                            "profilePic": payload.get(client).get("profilePic"),
+                            "checkInRequest": list(dict(payload.get(client).get("checkInRequest", {})).values())
+                        }
+                        results.append(custom_payload)
     except Exception as e:
         print(f"ERROR CHECKIN HISTORY >>> {e}")
     return results

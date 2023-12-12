@@ -10,3 +10,4 @@ firebase_config = {
     "appId": "1:243753016959:web:d14bedbac1b02c02d8a94a",
     "measurementId": "G-5E78RSMN8H"
 }
+secret_key = "0F53127e42354ze38D4024a9e2789a24"
