@@ -1,3 +1,5 @@
+import datetime
+
 import pyrebase
 from credentials import firebase_config
 import features
@@ -154,3 +156,16 @@ def pin_checkin(request_id, pin, unique_id):
     except Exception as e:
         print(f"PIN CHECKIN ERROR >>>> {e}")
     return 500
+
+
+def update_bracelet_logs(unique_id, connection_status):
+    try:
+        payload = {
+            "braceletConnection": connection_status,
+            "timeStamp": str(datetime.datetime.now()),
+        }
+        database.child("Offenders").child(unique_id).child("braceletHistory").push(payload)
+        return True
+    except Exception as e:
+        print(f"ERROR BRACELET LOGS >>> {e}")
+    return False

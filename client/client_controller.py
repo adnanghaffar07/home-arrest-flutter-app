@@ -191,3 +191,22 @@ def do_pin_checkin():
         "status": False,
         "message": "something went wrong"
     }, status_code
+
+
+@client_authentication
+def add_bracelet_logs():
+    payload = request.get_json()
+    connection_status = payload.get("connectionStatus")
+    client_id = add_bracelet_logs.payload.get("uniqueId")
+    # DB function for updating logs in offenders collection.
+    if db.update_bracelet_logs(client_id, connection_status):
+        return {
+            "status": True,
+            "message": "Log added successfully"
+        }, 200
+    return {
+        "status": False,
+        "message": "something went wrong..."
+    }, 500
+
+

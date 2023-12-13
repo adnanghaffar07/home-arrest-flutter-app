@@ -328,3 +328,14 @@ def get_checkin_history(request):
         "totalResults": len(data)
     }, 200
 
+
+@authentication
+def get_bracelet_history(request):
+    offender_id = request.args.to_dict().get("offenderId")
+    # db function to get the history of bracelet connection status.
+    results = db.bracelet_history_logs(offender_id)
+    return {
+        "status": True,
+        "details": results,
+        "totalResults": len(results)
+    }, 200

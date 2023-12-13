@@ -202,7 +202,11 @@ def get_offender_details(client_id):
             client = dict(client)
             client["agentDetails"] = get_profile_details(
                 features.get_unique_name_for_document(client.get("agentAssigned", "")))
-            return dict(client)
+            # if client.get("braceletHistory"):
+            client["braceletHistory"] = list(dict(client.get("braceletHistory", {})).values())
+            # if client.get("checkInRequest"):
+            client["checkInRequest"] = list(dict(client.get("checkInRequest", {})).values())
+            return client
     except Exception as e:
         print(f"ERROR >>> {e}")
     return None
@@ -482,7 +486,8 @@ def get_alerts_from_db(offender_list):
                 if response.get(offender):
                     offender_response = response.get(offender, {})
                     payload = {
-                        "fullName": f"{offenders_details.get(offender).get('firstName')} {offenders_details.get(offender).get('lastName')}",
+                        "fullName": f"{offenders_details.get(offender).get('firstName')} "
+                                    f"{offenders_details.get(offender).get('lastName')}",
                         "uniqueId": f"{offenders_details.get(offender).get('uniqueId')}",
                         "profilePic": f"{offenders_details.get(offender).get('profilePic')}",
                         "alerts": list(offender_response.values())[::-1]
@@ -533,3 +538,13 @@ def get_checkin_history(client_list):
     return results
 
 
+def bracelet_history_logs(offender_id):
+    results = []
+    try:
+        payload = database.child("Offenders").child(offender_id).child("braceletHistory").get().val()
+        if payload:
+            payload = list(dict(payload).values())
+            results = payload
+    except Exception as e:
+        print(f"ERROR BRACELET HISTORY >>> {e}")
+    return results

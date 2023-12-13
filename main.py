@@ -275,6 +275,14 @@ def get_checkin_history():
     return offender_controller.get_checkin_history(request)
 
 
+@app.route("/offender/bracelet-logs", methods=["GET"])
+def get_bracelet_history():
+    """
+    This end-point will get list of bracelet connection history
+    """
+    return offender_controller.get_bracelet_history(request)
+
+
 # ************************************************** Client App End-points **************************************************
 
 @app.route("/client/set-alert", methods=["POST"])
@@ -318,8 +326,6 @@ def upload_client_document():
     return client_controller.upload_document()
 
 
-
-
 @app.route("/client/check-in-requests", methods=["GET"])
 def get_client_checkin_request():
     """
@@ -342,6 +348,14 @@ def do_photo_checkin():
     This function will receive photo of the client for checkin.
     """
     return "Under Development..."
+
+
+@app.route("/client/bracelet-logs", methods=["POST"])
+def add_bracelet_logs():
+    """
+    This end-point is for handling bracelet logs status.
+    """
+    return client_controller.add_bracelet_logs()
 
 
 if __name__ == '__main__':
