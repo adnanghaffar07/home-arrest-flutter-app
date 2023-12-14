@@ -442,7 +442,7 @@ def upload_signature(request):
 @authentication
 def get_alerts(request):
     offenders_list = get_alerts.payload.get("clientsAssigned")
-    print(offenders_list)
+    # print(offenders_list)
     # db function to get the list of alerts
     if offenders_list:
         payload = db.get_alerts_from_db(offenders_list)

@@ -481,18 +481,24 @@ def get_alerts_from_db(offender_list):
             offenders_details = dict(offenders_details)
         if response:
             response = dict(response)
-            print(response)
+            # print(response)
             for offender in offender_list:
                 if response.get(offender):
                     offender_response = response.get(offender, {})
-                    payload = {
-                        "fullName": f"{offenders_details.get(offender).get('firstName')} "
-                                    f"{offenders_details.get(offender).get('lastName')}",
-                        "uniqueId": f"{offenders_details.get(offender).get('uniqueId')}",
-                        "profilePic": f"{offenders_details.get(offender).get('profilePic')}",
-                        "alerts": list(offender_response.values())[::-1]
-                    }
-                    alerts.append(payload)
+                    for alert in list(offender_response.values())[::-1]:
+                        alert["fullName"] = (f"{offenders_details.get(offender).get('firstName')}"
+                                             f" {offenders_details.get(offender).get('lastName')}")
+                        alert["uniqueID"] = f"{offenders_details.get(offender).get('uniqueId')}"
+                        alert["profilePic"] = f"{offenders_details.get(offender).get('profilePic')}"
+
+                        # payload = {
+                        #     "fullName": f"{offenders_details.get(offender).get('firstName')} "
+                        #                 f"{offenders_details.get(offender).get('lastName')}",
+                        #     "uniqueId": f"{offenders_details.get(offender).get('uniqueId')}",
+                        #     "profilePic": f"{offenders_details.get(offender).get('profilePic')}",
+                        #     "alerts": list(offender_response.values())[::-1]
+                        # }
+                        alerts.append(alert)
     except Exception as e:
         print(f"ERROR GETTING ALERTS >>> {e}")
     return alerts
@@ -514,27 +520,37 @@ def change_alert_read_status(alert_id, unique_id):
     return False
 
 
-def get_checkin_history(client_list):
-    results = []
-    print(client_list)
+def get_checkin_history(offender_id):
+    results = {}
+    print(offender_id)
     try:
-        payload = database.child("Offenders").get().val()
+        payload = database.child("Offenders").child(offender_id).get().val()
         if payload:
             payload = dict(payload)
-            # print(payload.get("demo@codeautomation_ai").get("checkInRequest"))
-            for client in client_list:
-                if not client:
-                    if len(list(dict(payload.get(client).get("checkInRequest", {})).values())) > 0:
-                        print(list(dict(payload.get(client).get("checkInRequest", {})).values()))
-                        custom_payload = {
-                            "fullName": f"{payload.get(client).get('firstName')} {payload.get(client).get('lastName')}",
-                            "uniqueId": payload.get(client).get("uniqueId"),
-                            "profilePic": payload.get(client).get("profilePic"),
-                            "checkInRequest": list(dict(payload.get(client).get("checkInRequest", {})).values())
-                        }
-                        results.append(custom_payload)
+            results = {
+                "fullName": f"{payload.get('firstName')} {payload.get('lastName')}",
+                "uniqueId": payload.get("uniqueId"),
+                "profilePic": payload.get("profilePic"),
+                "checkInRequest": list(dict(payload.get("checkInRequest", {})).values())
+            }
+            return results
+        # if payload:
+        #     payload = dict(payload)
+        #     # print(payload.get("demo@codeautomation_ai").get("checkInRequest"))
+        #     for client in client_list:
+        #         if not client:
+        #             if len(list(dict(payload.get(client).get("checkInRequest", {})).values())) > 0:
+        #                 print(list(dict(payload.get(client).get("checkInRequest", {})).values()))
+        #                 custom_payload = {
+        #                     "fullName": f"{payload.get(client).get('firstName')} {payload.get(client).get('lastName')}",
+        #                     "uniqueId": payload.get(client).get("uniqueId"),
+        #                     "profilePic": payload.get(client).get("profilePic"),
+        #                     "checkInRequest": list(dict(payload.get(client).get("checkInRequest", {})).values())
+        #                 }
+        #                 results.append(custom_payload)
     except Exception as e:
         print(f"ERROR CHECKIN HISTORY >>> {e}")
+    print(results)
     return results
 
 

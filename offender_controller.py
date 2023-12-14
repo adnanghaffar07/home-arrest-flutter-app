@@ -319,13 +319,12 @@ def update_offender_signature(request):
 
 @authentication
 def get_checkin_history(request):
-    client_list = get_checkin_history.payload.get("clientsAssigned", [])
+    client_id = request.args.to_dict().get("offenderId", "")
     # db function to get history of clients assigned
-    data = db.get_checkin_history(client_list)
+    data = db.get_checkin_history(client_id)
     return {
         "status": True,
-        "data": data,
-        "totalResults": len(data)
+        "details": data,
     }, 200
 
 
