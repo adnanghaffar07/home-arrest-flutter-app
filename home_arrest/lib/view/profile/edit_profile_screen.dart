@@ -1,26 +1,51 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:home_arrest/data/model/admin_user_model.dart';
 import 'package:home_arrest/providers/client_provider.dart';
+import 'package:home_arrest/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../../../global_widgets/text_fields/underline_input_feild.dart';
-import '../../../mixins/appbar_mixin.dart';
-import '../../../utils/utils.dart';
+import '../../global_widgets/image_pickers/image_picker_widget.dart';
+import '../../global_widgets/text_fields/underline_input_feild.dart';
+import '../../mixins/appbar_mixin.dart';
+import '../../utils/utils.dart';
 import 'widgets/gender_bottom_sheet.dart';
 
-class ClientProfileScreen extends StatelessWidget with AppbarMixin {
-  static const String routeName = '/client-profile';
-  const ClientProfileScreen({super.key});
+class EditProfileScreen extends StatefulWidget {
+  static const String routeName = '/edit-profile';
+
+  final AdminUserModel? user;
+  const EditProfileScreen({super.key, this.user});
+
+  @override
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
+}
+
+class _EditProfileScreenState extends State<EditProfileScreen> with AppbarMixin {
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneNumberController = TextEditingController();
+  final TextEditingController genderController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<UserProvider>(context, listen: false).clearUserImage();
+      if (widget.user!.firstName != null) firstNameController.text = widget.user!.firstName!;
+      if (widget.user!.lastName != null) lastNameController.text = widget.user!.lastName!;
+      if (widget.user!.email != null) emailController.text = widget.user!.email!;
+      if (widget.user!.phoneNumber != null) phoneNumberController.text = widget.user!.phoneNumber!;
+      if (widget.user!.gender != null) genderController.text = widget.user!.gender!;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController _firstNameController = TextEditingController();
-    final TextEditingController _lastNameController = TextEditingController();
-    final TextEditingController _emailController = TextEditingController();
-    final TextEditingController _phoneNumberController = TextEditingController();
-    final TextEditingController _genderController = TextEditingController();
-
-    return Consumer<ClientProvider>(
-      builder: (context, provider, child) {
+    return Consumer<UserProvider>(
+      builder: (context, userProvider, child) {
         return Scaffold(
           backgroundColor: const Color(0xFF21356A),
           appBar: baseStyleAppBar(
@@ -28,12 +53,42 @@ class ClientProfileScreen extends StatelessWidget with AppbarMixin {
             backgroundColor: Colors.transparent,
             actions: [
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  if (!userProvider.isLoading) {
+                    if (firstNameController.text.isEmpty) {
+                      Utils.showToast(context, 'Please enter first name');
+                      return;
+                    } else if (lastNameController.text.isEmpty) {
+                      Utils.showToast(context, 'Please enter last name');
+                      return;
+                    } else if (phoneNumberController.text.isEmpty) {
+                      Utils.showToast(context, 'Please enter phone number');
+                      return;
+                    } else if (emailController.text.isEmpty) {
+                      Utils.showToast(context, 'Please enter email address');
+                      return;
+                    } else if (genderController.text.isEmpty) {
+                      Utils.showToast(context, 'Please select gender');
+                      return;
+                    } else {
+                      AdminUserModel model = AdminUserModel(
+                        firstName: firstNameController.text,
+                        lastName: lastNameController.text,
+                        email: emailController.text,
+                        gender: genderController.text,
+                        phoneNumber: phoneNumberController.text,
+                      );
+                      userProvider.updateUser(model, context);
+                    }
+                  }
+                },
                 child: Container(
                   height: 35,
                   width: 35,
                   decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
-                  child: const Icon(Icons.check, color: Color(0xFF21356A), size: 20),
+                  child: userProvider.isLoading
+                      ? const Center(child: SizedBox(height: 15, width: 15, child: CircularProgressIndicator(color: Color(0xFF21356A), strokeWidth: 2)))
+                      : const Icon(Icons.check, color: Color(0xFF21356A), size: 20),
                 ),
               ),
               const SizedBox(width: 20),
@@ -44,11 +99,27 @@ class ClientProfileScreen extends StatelessWidget with AppbarMixin {
             child: Column(
               children: [
                 const SizedBox(height: 20),
-                Container(
-                  height: 80,
-                  width: 80,
-                  decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
-                  child: Image.asset('assets/images/profile.png', fit: BoxFit.cover),
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(start: 10),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(width: 2, color: Theme.of(context).cardColor),
+                          shape: BoxShape.circle,
+                        ),
+                        alignment: Alignment.center,
+                        child: ImagePickerWidget(
+                          image: widget.user?.profilePic ?? '',
+                          onTap: () async {
+                            userProvider.pickUserImage();
+                          },
+                          rawFile: userProvider.rawFile,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -56,7 +127,7 @@ class ClientProfileScreen extends StatelessWidget with AppbarMixin {
                     Expanded(
                       child: UnderLineInputTextField(
                         label: 'Fist Name',
-                        controller: _firstNameController,
+                        controller: firstNameController,
                         labelStyle: Utils.safeGoogleFont('Poppins', fontSize: 13, fontWeight: FontWeight.w400, color: const Color(0xFFA4A1A1)),
                         decoration: InputDecoration(
                           hintText: 'Enter Fist Name',
@@ -70,7 +141,7 @@ class ClientProfileScreen extends StatelessWidget with AppbarMixin {
                     Expanded(
                       child: UnderLineInputTextField(
                         label: 'Last Name',
-                        controller: _lastNameController,
+                        controller: lastNameController,
                         labelStyle: Utils.safeGoogleFont('Poppins', fontSize: 13, fontWeight: FontWeight.w400, color: const Color(0xFFA4A1A1)),
                         decoration: InputDecoration(
                           hintText: 'Enter Last Name',
@@ -85,7 +156,7 @@ class ClientProfileScreen extends StatelessWidget with AppbarMixin {
                 const SizedBox(height: 20),
                 UnderLineInputTextField(
                   label: 'Email Address',
-                  controller: _emailController,
+                  controller: emailController,
                   labelStyle: Utils.safeGoogleFont('Poppins', fontSize: 13, fontWeight: FontWeight.w400, color: const Color(0xFFA4A1A1)),
                   decoration: InputDecoration(
                     hintText: 'Enter Address',
@@ -101,7 +172,7 @@ class ClientProfileScreen extends StatelessWidget with AppbarMixin {
                 const SizedBox(height: 20),
                 UnderLineInputTextField(
                   label: 'Phone Number',
-                  controller: _phoneNumberController,
+                  controller: phoneNumberController,
                   labelStyle: Utils.safeGoogleFont('Poppins', fontSize: 13, fontWeight: FontWeight.w400, color: const Color(0xFFA4A1A1)),
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
@@ -118,7 +189,7 @@ class ClientProfileScreen extends StatelessWidget with AppbarMixin {
                 const SizedBox(height: 20),
                 UnderLineInputTextField(
                   label: 'Gender',
-                  controller: _genderController,
+                  controller: genderController,
                   enabled: false,
                   labelStyle: Utils.safeGoogleFont('Poppins', fontSize: 13, fontWeight: FontWeight.w400, color: const Color(0xFFA4A1A1)),
                   decoration: InputDecoration(
@@ -136,7 +207,7 @@ class ClientProfileScreen extends StatelessWidget with AppbarMixin {
                       backgroundColor: Colors.transparent,
                       builder: (context) => GenderBottomSheet(
                         onTap: (index) {
-                          _genderController.text = provider.selectGender(index);
+                          genderController.text = userProvider.selectGender(index);
                           Navigator.pop(context);
                         },
                       ),

@@ -75,7 +75,7 @@ class _SearchClientScreenState extends State<SearchClientScreen> with AppbarMixi
                               return Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 5),
                                 child: Text(
-                                  clientProvider.clients[index].name,
+                                  clientProvider.offenders[index].firstName ?? '',
                                   style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black),
                                 ),
                               );
@@ -83,7 +83,7 @@ class _SearchClientScreenState extends State<SearchClientScreen> with AppbarMixi
                             separatorBuilder: (context, index) {
                               return const Divider();
                             },
-                            itemCount: clientProvider.clients.length,
+                            itemCount: clientProvider.offenders.length,
                           ),
                       ],
                     ),

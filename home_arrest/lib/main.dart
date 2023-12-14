@@ -1,14 +1,20 @@
 import 'dart:io';
 
+import 'package:device_preview/device_preview.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:home_arrest/contact_screen.dart';
 import 'package:home_arrest/providers/alerts_provider.dart';
+import 'package:home_arrest/providers/auth_provider.dart';
 import 'package:home_arrest/providers/dashboard_provider.dart';
+import 'package:home_arrest/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'providers/client_provider.dart';
-import 'routes.dart';
+import 'providers/splash_provider.dart';
 import 'theme/theme.dart';
-import 'view/onboarding/splash/splash_screen.dart';
+import 'data/helper/get_di.dart' as di;
 
 class MyHttpOverrides extends HttpOverrides {
   @override
@@ -20,13 +26,11 @@ class MyHttpOverrides extends HttpOverrides {
 void main() async {
   HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(
-    // DevicePreview(
-    //   enabled: !kReleaseMode,
-    //   builder: (context) => const AppProvider(),
-    // ),
-    const AppProvider(),
-  );
+  await di.init();
+  runApp(DevicePreview(
+    enabled: kDebugMode,
+    builder: (context) => const AppProvider(),
+  ));
 }
 
 class AppProvider extends StatelessWidget {
@@ -35,9 +39,12 @@ class AppProvider extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ClientProvider()),
+        ChangeNotifierProvider(create: (_) => ClientProvider(clientRepo: Get.find())),
+        ChangeNotifierProvider(create: (_) => AuthProvider(authRepo: Get.find())),
+        ChangeNotifierProvider(create: (_) => SplashProvider(splashRepo: Get.find())),
+        ChangeNotifierProvider(create: (_) => UserProvider(userRepo: Get.find())),
+        ChangeNotifierProvider(create: (_) => ALertsProvider(alertsRepo: Get.find())),
         ChangeNotifierProvider(create: (_) => DashboardProvider()),
-        ChangeNotifierProvider(create: (_) => ALertsProvider()),
       ],
       child: const MyApp(),
     );
@@ -59,8 +66,9 @@ class MyApp extends StatelessWidget {
       },
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        initialRoute: SplashScreen.routeName,
-        onGenerateRoute: (settings) => Routes.onGenerateRoute(settings),
+        // initialRoute: SplashScreen.routeName,
+        // onGenerateRoute: (settings) => Routes.onGenerateRoute(settings),
+        home: ContactScreen(),
       ),
     );
   }

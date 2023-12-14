@@ -7,8 +7,18 @@ class CustomElevatedButton extends StatelessWidget {
   final Color? pressColor;
   final double borderRadius;
   final Widget? icon;
+  final bool isLoading;
 
-  const CustomElevatedButton({super.key, this.onTap, required this.title, this.unPressColor = const Color(0xFF21356A), this.pressColor = const Color(0xFF384569), this.borderRadius = 10.0, this.icon});
+  const CustomElevatedButton({
+    super.key,
+    this.onTap,
+    required this.title,
+    this.unPressColor = const Color(0xFF21356A),
+    this.pressColor = const Color(0xFF384569),
+    this.borderRadius = 10.0,
+    this.icon,
+    this.isLoading = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,15 +43,17 @@ class CustomElevatedButton extends StatelessWidget {
             ),
           ),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SizedBox(width: icon == null ? 0 : 40),
-            title,
-            if (icon == null) const SizedBox(),
-            if (icon != null) icon!,
-          ],
-        ),
+        child: !isLoading
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(width: icon == null ? 0 : 40),
+                  title,
+                  if (icon == null) const SizedBox(),
+                  if (icon != null) icon!,
+                ],
+              )
+            : const Center(child: SizedBox(height: 15, width: 15, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))),
       ),
     );
   }

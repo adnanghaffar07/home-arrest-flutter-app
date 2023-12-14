@@ -3,6 +3,8 @@ import 'package:home_arrest/global_widgets/global_scaffold/global_scaffold.dart'
 import 'package:home_arrest/providers/alerts_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../../constants/image_constants.dart';
+import '../../global_widgets/drawer/drawer.dart';
 import '../../mixins/appbar_mixin.dart';
 import '../../utils/utils.dart';
 import 'alert_detail_screen.dart';
@@ -15,17 +17,23 @@ class AlertsListingScreen extends StatelessWidget with AppbarMixin {
   Widget build(BuildContext context) {
     return GlobalScaffold(
       child: Scaffold(
+        drawer: const HomeDrawer(),
         backgroundColor: Colors.transparent,
         appBar: baseStyleAppBar(
           title: 'Alerts',
           backgroundColor: Colors.transparent,
-          titleColor: Color.fromARGB(255, 8, 8, 10),
+          titleColor: const Color.fromARGB(255, 8, 8, 10),
           leadingWidget: Builder(builder: (context) {
-            return IconButton(
-              onPressed: () {
+            return InkWell(
+              onTap: () {
                 Scaffold.of(context).openDrawer();
               },
-              icon: const Icon(Icons.menu, color: Color(0xFF21356A)),
+              child: Container(
+                height: 50,
+                width: 50,
+                padding: const EdgeInsets.all(13),
+                child: Center(child: Image.asset(ImagesConstants.menu)),
+              ),
             );
           }),
           actions: [
@@ -77,10 +85,10 @@ class AlertsListingScreen extends StatelessWidget with AppbarMixin {
                           itemCount: alertsProvider.alerts.length,
                           itemBuilder: (context, index) {
                             return InkWell(
-                              onTap: (){
+                              onTap: () {
                                 Navigator.pushNamed(context, AlertDetailScreen.routeName);
                               },
-                              child: AlertsCell(obj: alertsProvider.alerts[index]),
+                              child: const AlertsCell(obj: 'data'),
                             );
                           },
                           separatorBuilder: (context, index) {

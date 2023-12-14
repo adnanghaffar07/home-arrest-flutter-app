@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get_connect/http/src/response/response.dart';
@@ -11,8 +12,6 @@ import 'package:path/path.dart';
 // ignore: depend_on_referenced_packages, implementation_imports
 import 'package:http_parser/src/media_type.dart';
 import 'package:flutter/foundation.dart' as foundation;
-
-import '../../constants/app_constants.dart';
 
 class ApiClient extends ChangeNotifier {
   final String appBaseUrl;
@@ -27,10 +26,10 @@ class ApiClient extends ChangeNotifier {
   ApiClient({required this.appBaseUrl, required this.sharedPreferences}) {
     debugPrint('Token: $token');
     debugPrint('Type: $type');
-    updateHeader(token, 'en', null, type);
+    updateHeader(token, 'en');
   }
 
-  void updateHeader(String? token, String? languageCode, int? moduleID, String? type) {
+  void updateHeader(String? token, String? languageCode) {
     _mainHeaders = {
       'Content-Type': 'application/json; charset=UTF-8',
       'Authorization': 'Bearer $token',
@@ -41,12 +40,7 @@ class ApiClient extends ChangeNotifier {
   Future<Response> getData(String uri, {Map<String, dynamic>? query, Map<String, String>? headers}) async {
     try {
       debugPrint('====> API Call: $appBaseUrl$uri\nHeader: $_mainHeaders');
-      http.Response response = await http
-          .get(
-            Uri.parse(appBaseUrl + uri),
-            headers: headers ?? _mainHeaders,
-          )
-          .timeout(Duration(seconds: timeoutInSeconds));
+      http.Response response = await http.get(Uri.parse(appBaseUrl + uri), headers: headers ?? _mainHeaders).timeout(Duration(seconds: timeoutInSeconds));
       return handleResponse(response, uri);
     } catch (e) {
       return const Response(statusCode: 1, statusText: noInternetMessage);
@@ -57,20 +51,14 @@ class ApiClient extends ChangeNotifier {
     try {
       debugPrint('====> API Call: $appBaseUrl$uri\nHeader: $_mainHeaders');
       debugPrint('====> API Body: $body');
-      http.Response response = await http
-          .post(
-            Uri.parse(appBaseUrl + uri),
-            body: jsonEncode(body),
-            headers: headers ?? _mainHeaders,
-          )
-          .timeout(Duration(seconds: timeoutInSeconds));
+      http.Response response = await http.post(Uri.parse(appBaseUrl + uri), body: jsonEncode(body), headers: headers ?? _mainHeaders).timeout(Duration(seconds: timeoutInSeconds));
       return handleResponse(response, uri);
     } catch (e) {
       return const Response(statusCode: 1, statusText: noInternetMessage);
     }
   }
 
-  Future<Response> postMultipartData(String uri, Map<String, String> body, List<MultipartBody> multipartBody, {Map<String, String>? headers}) async {
+  Future<Response> postMultipartData(String uri, Map<String, String>? body, List<MultipartBody> multipartBody, {Map<String, String>? headers}) async {
     try {
       debugPrint('====> API Call: $appBaseUrl$uri\nHeader: $_mainHeaders');
       debugPrint('====> API Body: $body');
@@ -100,7 +88,9 @@ class ApiClient extends ChangeNotifier {
           }
         }
       }
-      request.fields.addAll(body);
+      if (body != null) {
+        request.fields.addAll(body);
+      }
       inspect(request);
       http.Response response = await http.Response.fromStream(await request.send());
       return handleResponse(response, uri);
@@ -113,13 +103,7 @@ class ApiClient extends ChangeNotifier {
     try {
       debugPrint('====> API Call: $appBaseUrl$uri\nHeader: $_mainHeaders');
       debugPrint('====> API Body: $body');
-      http.Response response = await http
-          .put(
-            Uri.parse(appBaseUrl + uri),
-            body: jsonEncode(body),
-            headers: headers ?? _mainHeaders,
-          )
-          .timeout(Duration(seconds: timeoutInSeconds));
+      http.Response response = await http.put(Uri.parse(appBaseUrl + uri), body: jsonEncode(body), headers: headers ?? _mainHeaders).timeout(Duration(seconds: timeoutInSeconds));
       return handleResponse(response, uri);
     } catch (e) {
       return const Response(statusCode: 1, statusText: noInternetMessage);
@@ -129,12 +113,7 @@ class ApiClient extends ChangeNotifier {
   Future<Response> deleteData(String uri, {Map<String, String>? headers}) async {
     try {
       debugPrint('====> API Call: $appBaseUrl$uri\nHeader: $_mainHeaders');
-      http.Response response = await http
-          .delete(
-            Uri.parse(appBaseUrl + uri),
-            headers: headers ?? _mainHeaders,
-          )
-          .timeout(Duration(seconds: timeoutInSeconds));
+      http.Response response = await http.delete(Uri.parse(appBaseUrl + uri), headers: headers ?? _mainHeaders).timeout(Duration(seconds: timeoutInSeconds));
       return handleResponse(response, uri);
     } catch (e) {
       return const Response(statusCode: 1, statusText: noInternetMessage);
@@ -170,12 +149,10 @@ class ApiClient extends ChangeNotifier {
 
 class MultipartBody {
   String key;
-  File? file;
+  XFile? file;
 
   MultipartBody(this.key, this.file);
 }
-
-/// errors : [{"code":"l_name","message":"The last name field is required."},{"code":"password","message":"The password field is required."}]
 
 class ErrorResponse {
   List<Errors>? _errors;
@@ -203,9 +180,6 @@ class ErrorResponse {
     return map;
   }
 }
-
-/// code : "l_name"
-/// message : "The last name field is required."
 
 class Errors {
   String? _code;

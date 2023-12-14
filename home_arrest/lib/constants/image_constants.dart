@@ -24,10 +24,16 @@ class ImagesConstants {
   static const String bailBond = 'assets/images/bail_bond.png';
   static const String alerts = 'assets/images/alerts.png';
   static const String addClient = 'assets/images/add_client.png';
-
   static const String call = 'assets/images/call.png';
   static const String clipboard = 'assets/images/clipboard.png';
   static const String document = 'assets/images/document.png';
   static const String locate = 'assets/images/loacte.png';
   static const String pointer = 'assets/images/pointer.png';
+  static const String padLock = 'assets/images/padlock.png';
+  static const String signature = 'assets/images/signature.png';
+  static const String userPlaceholder = 'assets/images/user_placeholder.png';
+  static const String filter = 'assets/images/filter.png';
+  static const String menu = 'assets/images/drawer_icon.png';
+  static const String edit = 'assets/images/edit.png';
+  static const String addOffendor = 'assets/images/add_offendor.png';
 }

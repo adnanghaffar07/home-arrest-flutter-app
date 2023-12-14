@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:home_arrest/constants/image_constants.dart';
 import 'package:home_arrest/extensions/margin_or_padding_extension.dart';
+import 'package:home_arrest/view/client/ping_current_location/ping_current_location_screen.dart';
 
 import '../../../global_widgets/global_scaffold/global_scaffold.dart';
 import '../../../mixins/appbar_mixin.dart';
 import '../../../utils/utils.dart';
+import '../request_check_in/request_check_in_screen.dart';
 
 class ClientInfoScreen extends StatefulWidget {
   const ClientInfoScreen({super.key});
@@ -99,12 +101,21 @@ class _ClientInfoScreenState extends State<ClientInfoScreen> with AppbarMixin {
                 scrollDirection: Axis.horizontal,
                 itemCount: tabs.length,
                 itemBuilder: ((context, index) {
-                  return Container(
-                    width: 63,
-                    margin: const EdgeInsets.only(right: 10),
-                    decoration: BoxDecoration(color: const Color(0xFF21356A), borderRadius: BorderRadius.circular(7)),
-                    padding: const EdgeInsets.symmetric(vertical: 07),
-                    child: Image.asset(tabs[index], color: Colors.white),
+                  return InkWell(
+                    onTap: () {
+                      if (index == 0) {
+                        Navigator.pushNamed(context, PingCurrentLocationScreen.routeName);
+                      } else if (index == 1) {
+                        Navigator.pushNamed(context, RequestCheckInScreen.routeName);
+                      }
+                    },
+                    child: Container(
+                      width: 63,
+                      margin: const EdgeInsets.only(right: 10),
+                      decoration: BoxDecoration(color: const Color(0xFF21356A), borderRadius: BorderRadius.circular(7)),
+                      padding: const EdgeInsets.symmetric(vertical: 07),
+                      child: Image.asset(tabs[index], color: Colors.white),
+                    ),
                   );
                 }),
               ),

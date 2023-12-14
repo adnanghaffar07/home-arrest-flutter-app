@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../providers/client_provider.dart';
-import '../../../../utils/utils.dart';
+import '../../../providers/client_provider.dart';
+import '../../../utils/utils.dart';
 
 typedef GenderBottomSheetCallBack = void Function(int index);
 

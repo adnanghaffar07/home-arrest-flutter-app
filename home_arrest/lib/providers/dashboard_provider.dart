@@ -7,7 +7,8 @@ class DashboardProvider extends ChangeNotifier {
   final List<DashboardModel> _bottomItems = [
     DashboardModel(title: 'Home', icon: ImagesConstants.home, isSelected: true),
     DashboardModel(title: 'House Arrest', icon: ImagesConstants.houseArrest),
-    DashboardModel(title: 'Bail Bond', icon: ImagesConstants.bailBond),
+    // DashboardModel(title: 'Bail Bond', icon: ImagesConstants.bailBond),
+    DashboardModel(title: 'Add Client', icon: ImagesConstants.addOffendor),
     DashboardModel(title: 'Alerts', icon: ImagesConstants.alerts),
   ];
 
