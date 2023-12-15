@@ -270,10 +270,6 @@ def get_admin_by_role_id(role_id):
         if users:
             # payload = []
             users = list(dict(users).values())
-            # for key, value in users.items():
-            #     if users[key]["role"] == role_id:
-            #         del users[key]["password"]
-            #         payload.append(users[key])
             return users
     except Exception as e:
         print(f"ERROR >>> {e}")
@@ -306,6 +302,7 @@ def update_admin_role(admin_id, role_status):
     This function will update Offender active and inactive with the help of boolean
     value.
     """
+    role_name = ""
     if role_status == 1:
         role_name = "super user"
     elif role_status == 2:
@@ -330,10 +327,6 @@ def get_offenders_by_status(status):
         if clients:
             # offenders = []
             clients = list(dict(clients).values())
-            # for key, value in clients.items():
-            #     if clients[key].get("active") == status:
-            #         print(f"ACTIVE CLIENT >>> {clients[key]['emailAddress']}")
-            #         offenders.append(clients[key])
             return clients
     except Exception as e:
         print(f"ERROR ACTIVE OFFENDERS >>> {e}")
@@ -450,23 +443,6 @@ def add_request_checkin(payload, agent_id, offender_id):
         payload["status"] = False
         database.child("Offenders").child(offender_id).child("checkInRequest").push(payload)
         return 200, payload
-        # if offender_data:
-        #     offender_data = list(offender_data)
-        #     print(offender_data)
-        #     payload["requestedById"] = agent_id
-        #     payload["requestId"] = uuid.uuid4().hex
-        #     payload["requestTime"] = str(datetime.datetime.now())
-        #     payload["status"] = False
-        #     offender_data.append(payload)
-        #     database.child("Offenders").child(offender_id).update({"checkInRequest": offender_data})
-        # else:
-        #     payload["requestedById"] = agent_id
-        #     payload["requestTime"] = str(datetime.datetime.now())
-        #     payload["requestId"] = uuid.uuid4().hex
-        #     payload["status"] = False
-        #     request_list = [payload]
-        #     database.child("Offenders").child(offender_id).update({"checkInRequest": request_list})
-        #     return 200, payload
     except Exception as e:
         print(f"REQUEST CHECKIN ERROR >>> {e}")
     return 500, None
@@ -490,14 +466,6 @@ def get_alerts_from_db(offender_list):
                                              f" {offenders_details.get(offender).get('lastName')}")
                         alert["uniqueID"] = f"{offenders_details.get(offender).get('uniqueId')}"
                         alert["profilePic"] = f"{offenders_details.get(offender).get('profilePic')}"
-
-                        # payload = {
-                        #     "fullName": f"{offenders_details.get(offender).get('firstName')} "
-                        #                 f"{offenders_details.get(offender).get('lastName')}",
-                        #     "uniqueId": f"{offenders_details.get(offender).get('uniqueId')}",
-                        #     "profilePic": f"{offenders_details.get(offender).get('profilePic')}",
-                        #     "alerts": list(offender_response.values())[::-1]
-                        # }
                         alerts.append(alert)
     except Exception as e:
         print(f"ERROR GETTING ALERTS >>> {e}")
@@ -534,20 +502,6 @@ def get_checkin_history(offender_id):
                 "checkInRequest": list(dict(payload.get("checkInRequest", {})).values())
             }
             return results
-        # if payload:
-        #     payload = dict(payload)
-        #     # print(payload.get("demo@codeautomation_ai").get("checkInRequest"))
-        #     for client in client_list:
-        #         if not client:
-        #             if len(list(dict(payload.get(client).get("checkInRequest", {})).values())) > 0:
-        #                 print(list(dict(payload.get(client).get("checkInRequest", {})).values()))
-        #                 custom_payload = {
-        #                     "fullName": f"{payload.get(client).get('firstName')} {payload.get(client).get('lastName')}",
-        #                     "uniqueId": payload.get(client).get("uniqueId"),
-        #                     "profilePic": payload.get(client).get("profilePic"),
-        #                     "checkInRequest": list(dict(payload.get(client).get("checkInRequest", {})).values())
-        #                 }
-        #                 results.append(custom_payload)
     except Exception as e:
         print(f"ERROR CHECKIN HISTORY >>> {e}")
     print(results)

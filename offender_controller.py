@@ -31,11 +31,6 @@ def get_offenders(request):
 
 @authentication
 def add_new_offender(request):
-    # if add_new_offender.payload.get("role") != 1:
-    #     return {
-    #         "status": False,
-    #         "message": "Permission Denied."
-    #     }, 401
     payload = request.get_json()
     # Validation of response.
     try:
@@ -319,7 +314,7 @@ def update_offender_signature(request):
 
 @authentication
 def get_checkin_history(request):
-    client_id = request.args.to_dict().get("offenderId", "")
+    client_id = request.args.to_dict().get("offenderId")
     # db function to get history of clients assigned
     data = db.get_checkin_history(client_id)
     return {

@@ -166,14 +166,6 @@ def update_profile(request):
 def update_password(request):
     payload = request.get_json()
     email = update_password.payload.get("email")
-    # old_password = payload.get("oldPassword")
-    # compare_pass = update_password.payload.get("password")
-    # if old_password != compare_pass:
-    #     return {
-    #         "status": False,
-    #         "message": "Password did not match."
-    #     }, 401
-    # DB function to update new password.
     resp = db.update_user_password(email, payload.get("newPassword"))
     if resp:
         token = getToken(email, payload.get("newPassword"), secret_key)

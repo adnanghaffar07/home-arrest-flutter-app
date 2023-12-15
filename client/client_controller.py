@@ -9,6 +9,7 @@ import client.client_db as db
 import features
 from authentication_system import getToken, client_authentication
 from credentials import secret_key
+from models_serializer import Login
 
 
 @client_authentication
@@ -32,6 +33,14 @@ def set_alerts():
 
 def client_login():
     payload = request.get_json()
+    try:
+        Login().load(payload)
+    except Exception as e:
+        print(f"ERROR VALIDATION >>> {e}")
+        return {
+            "status": False,
+            "message": "invalid input fields"
+        }, 422
     flag, data = db.login_user(payload)
     if flag:
         token = getToken(payload["email"], payload["password"], secret_key)
@@ -208,5 +217,3 @@ def add_bracelet_logs():
         "status": False,
         "message": "something went wrong..."
     }, 500
-
-
