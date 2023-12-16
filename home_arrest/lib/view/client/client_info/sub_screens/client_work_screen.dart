@@ -6,30 +6,26 @@ import 'package:home_arrest/data/model/offender_model.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
-import '../../../constants/image_constants.dart';
-import '../../../global_widgets/drawer/drawer.dart';
-import '../../../global_widgets/global_scaffold/global_scaffold.dart';
-import '../../../global_widgets/image_pickers/image_picker_widget.dart';
-import '../../../global_widgets/text_fields/underline_input_feild.dart';
-import '../../../mixins/appbar_mixin.dart';
-import '../../../providers/client_provider.dart';
-import '../../../utils/utils.dart';
-import 'global_widgets/buttons/elevated_button.dart';
-import 'view/client/add_offender/widgets/check_in_bottom_sheet.dart';
-import 'view/client/add_offender/widgets/client_type_bottom_sheet.dart';
-import 'view/client/add_offender/widgets/monitor_level_bottom_sheet.dart';
+import '../../../../constants/image_constants.dart';
+import '../../../../global_widgets/buttons/elevated_button.dart';
+import '../../../../global_widgets/drawer/drawer.dart';
+import '../../../../global_widgets/global_scaffold/global_scaffold.dart';
+import '../../../../global_widgets/text_fields/underline_input_feild.dart';
+import '../../../../mixins/appbar_mixin.dart';
+import '../../../../providers/client_provider.dart';
+import '../../../../utils/utils.dart';
 
-class WorkScreen extends StatefulWidget {
-  static const String routeName = '/WorkScreen';
+class ClientWorkDetailScreen extends StatefulWidget {
+  static const String routeName = '/clientWorkDetailScreen';
 
   final bool isFromNav;
-  const WorkScreen({super.key, this.isFromNav = true});
+  const ClientWorkDetailScreen({super.key, this.isFromNav = true});
 
   @override
-  State<WorkScreen> createState() => _WorkScreenState();
+  State<ClientWorkDetailScreen> createState() => _ClientWorkDetailScreenState();
 }
 
-class _WorkScreenState extends State<WorkScreen> with AppbarMixin {
+class _ClientWorkDetailScreenState extends State<ClientWorkDetailScreen> with AppbarMixin {
   TextEditingController clientTypeController = TextEditingController();
   TextEditingController firstNameController = TextEditingController();
   TextEditingController middleNameController = TextEditingController();
@@ -75,79 +71,9 @@ class _WorkScreenState extends State<WorkScreen> with AppbarMixin {
             appBar: baseStyleAppBar(
               title: 'Work',
               backgroundColor: Colors.transparent,
-              leadingWidget: Builder(builder: (context) {
-                return InkWell(
-                  onTap: () {
-                    Scaffold.of(context).openDrawer();
-                  },
-                  child: Container(
-                    height: 50,
-                    width: 50,
-                    padding: const EdgeInsets.all(13),
-                    child: Center(child: Image.asset(ImagesConstants.menu, color: Colors.white)),
-                  ),
-                );
-              }),
               actions: [
                 InkWell(
-                  onTap: () {
-                    if (!clientProvider.isLoading) {
-                      if (clientProvider.pickedFile == null) {
-                        Utils.showToast(context, 'Please select profile image');
-                        return;
-                      } else if (clientTypeController.text.isEmpty) {
-                        Utils.showToast(context, 'Please select client type');
-                        return;
-                      } else if (firstNameController.text.isEmpty) {
-                        Utils.showToast(context, 'Please enter first name');
-                        return;
-                      } else if (lastNameController.text.isEmpty) {
-                        Utils.showToast(context, 'Please enter last name');
-                        return;
-                      } else if (dobController.text.isEmpty) {
-                        Utils.showToast(context, 'Please select DOB');
-                        return;
-                      } else if (ssnController.text.isEmpty) {
-                        Utils.showToast(context, 'Please enter SSN');
-                        return;
-                      } else if (phoneNumberController.text.isEmpty) {
-                        Utils.showToast(context, 'Please enter phone number');
-                        return;
-                      } else if (emailAddressController.text.isEmpty) {
-                        Utils.showToast(context, 'Please enter email address');
-                        return;
-                      } else if (sentenceStartDateController.text.isEmpty) {
-                        Utils.showToast(context, 'Please select sentence start date');
-                        return;
-                      } else if (sentenceEndDateController.text.isEmpty) {
-                        Utils.showToast(context, 'Please select sentence end date');
-                        return;
-                      } else if (checkInsController.text.isEmpty) {
-                        Utils.showToast(context, 'Please select check ins');
-                        return;
-                      } else if (monitorLevelController.text.isEmpty) {
-                        Utils.showToast(context, 'Please select monitor level');
-                        return;
-                      } else {
-                        OffendorModel offendorModel = OffendorModel(
-                          clientType: clientTypeController.text,
-                          firstName: firstNameController.text,
-                          middleName: middleNameController.text,
-                          lastName: lastNameController.text,
-                          maidenName: maidenNameController.text,
-                          ssn: ssnController.text,
-                          phoneNumber: phoneNumberController.text,
-                          emailAddress: emailAddressController.text,
-                          sentenceStartDate: sentenceStartDateController.text,
-                          sentenceEndDate: sentenceEndDateController.text,
-                          monitorLevel: monitorLevelController.text,
-                          dateOfBirth: dobController.text,
-                          checkIn: checkInsController.text,
-                        );
-                        clientProvider.addOffendor(offendorModel, context);
-                      }
-                    }
-                  },
+                  onTap: () {},
                   child: Container(
                     height: 35,
                     width: 35,
@@ -167,7 +93,7 @@ class _WorkScreenState extends State<WorkScreen> with AppbarMixin {
                   padding: const EdgeInsetsDirectional.only(start: 10),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                    children: const [
                       // Container(
                       //   decoration: BoxDecoration(
                       //     border: Border.all(width: 2, color: Theme.of(context).cardColor),

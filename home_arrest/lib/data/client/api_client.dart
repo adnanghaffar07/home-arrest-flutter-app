@@ -91,7 +91,6 @@ class ApiClient extends ChangeNotifier {
       if (body != null) {
         request.fields.addAll(body);
       }
-      inspect(request);
       http.Response response = await http.Response.fromStream(await request.send());
       return handleResponse(response, uri);
     } catch (e) {

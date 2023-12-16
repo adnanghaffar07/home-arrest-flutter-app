@@ -122,6 +122,7 @@ class UserProvider extends ChangeNotifier {
   Future<void> updateUserSignature(XFile image, BuildContext context) async {
     _isLoading = true;
     notifyListeners();
+    
     try {
       await userRepo.addUserSignature(image).then((responce) {
         if (responce.body['status']) {

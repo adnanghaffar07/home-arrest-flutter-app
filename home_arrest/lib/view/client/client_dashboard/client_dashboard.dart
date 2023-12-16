@@ -12,6 +12,7 @@ import '../../../global_widgets/drawer/drawer.dart';
 import '../../../global_widgets/global_scaffold/global_scaffold.dart';
 import '../../../global_widgets/image_pickers/custom_image.dart';
 import '../../../mixins/appbar_mixin.dart';
+import '../../../utils/utils.dart';
 import '../search_client/search_client_screen.dart';
 import 'widgets/client_dashboard_detail_widget.dart';
 
@@ -79,95 +80,97 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> with Appb
         ),
         body: Consumer<ClientProvider>(
           builder: (context, clientProvider, child) {
-            return clientProvider.isLoading && clientProvider.offenders.isEmpty
+            return clientProvider.isLoading
                 ? const Center(child: CupertinoActivityIndicator())
-                : Column(
-                    children: [
-                      Stack(
-                        alignment: Alignment.centerRight,
+                : clientProvider.offenders.isNotEmpty
+                    ? Column(
                         children: [
-                          SizedBox(
-                            height: 85,
-                            width: double.infinity,
-                            child: ListView.separated(
-                              controller: _scrollController,
-                              itemCount: clientProvider.offenders.length,
-                              scrollDirection: Axis.horizontal,
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
-                              itemBuilder: (context, index) {
-                                var offender = clientProvider.offenders[index];
+                          Stack(
+                            alignment: Alignment.centerRight,
+                            children: [
+                              SizedBox(
+                                height: 85,
+                                width: double.infinity,
+                                child: ListView.separated(
+                                  controller: _scrollController,
+                                  itemCount: clientProvider.offenders.length,
+                                  scrollDirection: Axis.horizontal,
+                                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                                  itemBuilder: (context, index) {
+                                    var offender = clientProvider.offenders[index];
 
-                                return InkWell(
-                                  onTap: () {
-                                    clientProvider.setSelectedOffendor(index);
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          height: 55,
-                                          width: 55,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            border: Border.all(
-                                              width: 3,
-                                              color: offender.monitorLevel == 'Low'
-                                                  ? Colors.green
-                                                  : offender.monitorLevel == 'Medium'
-                                                      ? Colors.yellow
-                                                      : Colors.red,
+                                    return InkWell(
+                                      onTap: () {
+                                        clientProvider.setSelectedOffendor(index);
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              height: 55,
+                                              width: 55,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  width: 3,
+                                                  color: offender.monitorLevel == 3
+                                                      ? Colors.green
+                                                      : offender.monitorLevel == 2
+                                                          ? Colors.yellow
+                                                          : Colors.red,
+                                                ),
+                                              ),
+                                              child: Center(
+                                                child: ClipRRect(
+                                                  borderRadius: BorderRadius.circular(50),
+                                                  child: CustomImage(image: offender.profilePic ?? '', height: 55, width: 55, fit: BoxFit.fill),
+                                                ),
+                                              ),
                                             ),
-                                          ),
-                                          child: Center(
-                                            child: ClipRRect(
-                                              borderRadius: BorderRadius.circular(50),
-                                              child: CustomImage(image: offender.profilePic ?? '', height: 55, width: 55, fit: BoxFit.fill),
-                                            ),
-                                          ),
+                                            const SizedBox(height: 5),
+                                            Text('${offender.firstName}'),
+                                          ],
                                         ),
-                                        const SizedBox(height: 5),
-                                        Text('${offender.firstName}'),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                              separatorBuilder: (context, index) {
-                                return const SizedBox(width: 5);
-                              },
-                            ),
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(right: 20),
-                            child: GestureDetector(
-                              onTap: () {
-                                _scrollController.animateTo(
-                                  _scrollController.position.maxScrollExtent,
-                                  duration: const Duration(milliseconds: 700),
-                                  curve: Curves.easeOut,
-                                );
-                              },
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    height: 30,
-                                    width: 30,
-                                    decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(width: 2), color: const Color(0xFF21356A).withOpacity(0.9)),
-                                    child: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 10),
-                                  ),
-                                  const SizedBox(height: 15),
-                                ],
+                                      ),
+                                    );
+                                  },
+                                  separatorBuilder: (context, index) {
+                                    return const SizedBox(width: 5);
+                                  },
+                                ),
                               ),
-                            ),
+                              Container(
+                                margin: const EdgeInsets.only(right: 20),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    _scrollController.animateTo(
+                                      _scrollController.position.maxScrollExtent,
+                                      duration: const Duration(milliseconds: 700),
+                                      curve: Curves.easeOut,
+                                    );
+                                  },
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        height: 30,
+                                        width: 30,
+                                        decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(width: 2), color: const Color(0xFF21356A).withOpacity(0.9)),
+                                        child: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 10),
+                                      ),
+                                      const SizedBox(height: 15),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
+                          Expanded(child: CLientDashboardDetailWidget(offendorModel: clientProvider.offenders.where((element) => element.isSelected).toList()[0])),
                         ],
-                      ),
-                      Expanded(child: CLientDashboardDetailWidget(offendorModel: clientProvider.offenders.where((element) => element.isSelected).first)),
-                    ],
-                  );
+                      )
+                    : Center(child: Text('No Clients Found', style: Utils.safeGoogleFont('Poppins', fontSize: 16, fontWeight: FontWeight.w500, color: const Color(0xFF21356A))));
           },
         ),
       ),

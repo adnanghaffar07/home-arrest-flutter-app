@@ -79,7 +79,7 @@ class CLientDashboardDetailWidget extends StatelessWidget {
                           style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w700, color: Colors.grey),
                         ),
                         Text(
-                          '${offendorModel.workAddressDetails?.workAddress}',
+                          offendorModel.contactDetails?.homeAddress ?? '',
                           style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black),
                         ),
                         const SizedBox(height: 10),
@@ -88,7 +88,7 @@ class CLientDashboardDetailWidget extends StatelessWidget {
                           style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w700, color: Colors.grey),
                         ),
                         Text(
-                          '${offendorModel.homeAddressDetails?.homeAddress}',
+                          offendorModel.workDetails?.workAddress ?? '',
                           style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black),
                         ),
                         const SizedBox(height: 10),

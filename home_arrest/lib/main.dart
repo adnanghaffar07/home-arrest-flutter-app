@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:home_arrest/contact_screen.dart';
 import 'package:home_arrest/providers/alerts_provider.dart';
 import 'package:home_arrest/providers/auth_provider.dart';
 import 'package:home_arrest/providers/dashboard_provider.dart';
@@ -13,7 +12,9 @@ import 'package:home_arrest/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'providers/client_provider.dart';
 import 'providers/splash_provider.dart';
+import 'routes.dart';
 import 'theme/theme.dart';
+import 'view/onboarding/splash/splash_screen.dart';
 import 'data/helper/get_di.dart' as di;
 
 class MyHttpOverrides extends HttpOverrides {
@@ -66,9 +67,8 @@ class MyApp extends StatelessWidget {
       },
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        // initialRoute: SplashScreen.routeName,
-        // onGenerateRoute: (settings) => Routes.onGenerateRoute(settings),
-        home: ContactScreen(),
+        initialRoute: SplashScreen.routeName,
+        onGenerateRoute: (settings) => Routes.onGenerateRoute(settings),
       ),
     );
   }

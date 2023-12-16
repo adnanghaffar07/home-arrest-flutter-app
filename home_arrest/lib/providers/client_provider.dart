@@ -9,6 +9,7 @@ import 'package:home_arrest/view/dashboard/dashboard_screen.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../constants/image_constants.dart';
+import '../data/model/base/client_info_types_model.dart';
 import '../data/model/client_type.dart';
 import '../utils/utils.dart';
 
@@ -51,20 +52,39 @@ class ClientProvider extends ChangeNotifier {
     ClientHistoryModel(dateTime: "24 March, 12:00 PM", address: "1234 Main St, Los Angeles, CA 90012"),
   ];
 
+  final List<ClientInfoTypesModel> _clientInfoTypes = [
+    ClientInfoTypesModel(name: 'Basic', isSelected: false),
+    ClientInfoTypesModel(name: 'Offense', isSelected: false),
+    ClientInfoTypesModel(name: 'Contact', isSelected: false),
+    ClientInfoTypesModel(name: 'Bail Bond', isSelected: false),
+    ClientInfoTypesModel(name: 'Images', isSelected: false),
+    ClientInfoTypesModel(name: 'Personal Work', isSelected: false),
+    ClientInfoTypesModel(name: 'Guarantors', isSelected: false),
+    ClientInfoTypesModel(name: 'Billing History', isSelected: false),
+    ClientInfoTypesModel(name: 'Friends & Family', isSelected: false),
+    ClientInfoTypesModel(name: 'Social Media', isSelected: false),
+    ClientInfoTypesModel(name: 'Liens', isSelected: false),
+    ClientInfoTypesModel(name: 'Collateral', isSelected: false),
+    ClientInfoTypesModel(name: 'Co-Signer', isSelected: false),
+  ];
+
   List<OffendorModel> _offenders = [];
   XFile? _pickedFile;
   Uint8List? _rawFile;
   bool _isLoading = false;
+  String? _selectedClientInfoType;
 
   List<BottomSheetSelectionModel> get clientTypes => _clientTypes;
   List<BottomSheetSelectionModel> get chekInList => _chekInList;
   List<BottomSheetSelectionModel> get monitorLevelList => _monitorLevelList;
   List<BottomSheetSelectionModel> get gendersList => _gendersList;
+  List<ClientInfoTypesModel> get clientInfoTypes => _clientInfoTypes;
   List<ClientHistoryModel> get clientHisotry => _clientHisotry;
   List<OffendorModel> get offenders => _offenders;
   XFile? get pickedFile => _pickedFile;
   Uint8List? get rawFile => _rawFile;
   bool get isLoading => _isLoading;
+  String? get selectedClientInfoType => _selectedClientInfoType;
 
   String selectClientType(int index) {
     for (var element in _clientTypes) {
@@ -113,6 +133,25 @@ class ClientProvider extends ChangeNotifier {
   void clearOffendorImage() {
     _pickedFile = null;
     _rawFile = null;
+    notifyListeners();
+  }
+
+  void setSelectedClientInfoType(String? value) {
+    _selectedClientInfoType = value;
+    notifyListeners();
+  }
+
+  void selectClientInfoType(int index) {
+    if (clientInfoTypes[index].isSelected != true) {
+      for (var element in _clientInfoTypes) {
+        element.isSelected = false;
+      }
+      _clientInfoTypes[index].isSelected = true;
+      _selectedClientInfoType = _clientInfoTypes[index].name;
+    } else {
+      _clientInfoTypes[index].isSelected = false;
+      _selectedClientInfoType = null;
+    }
     notifyListeners();
   }
 

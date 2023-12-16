@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:get/get.dart';
 import 'package:home_arrest/constants/api_constants.dart';
 import 'package:home_arrest/data/client/api_client.dart';
@@ -15,7 +17,8 @@ class UserRepo {
   }
 
   Future<Response> addUserPic(XFile data) async {
-    return await apiClient.postMultipartData(ApiConstants.addAdminProfilePic, {}, [MultipartBody('image', data)]);
+    inspect(data);
+    return await apiClient.postMultipartData(ApiConstants.addAdminProfilePic, {'user_id': '1'}, [MultipartBody('image', data)]);
   }
 
   Future<Response> getUserDetails() async {
@@ -23,6 +26,7 @@ class UserRepo {
   }
 
   Future<Response> addUserSignature(XFile data) async {
+    inspect(data);
     return await apiClient.postMultipartData(ApiConstants.addUserSignature, {}, [MultipartBody('image', data)]);
   }
 }

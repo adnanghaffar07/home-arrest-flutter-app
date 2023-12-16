@@ -1,3 +1,5 @@
+import 'dart:developer';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -59,7 +61,8 @@ class _AddSignatureScreenState extends State<AddSignatureScreen> with AppbarMixi
             onTap: () async {
               if (signatureController.isNotEmpty) {
                 exportSignature().then((signature) {
-                  Provider.of<UserProvider>(context, listen: false).updateUserSignature(XFile.fromData(signature!), context);
+                  inspect(XFile.fromData(signature ?? Uint8List(0)));
+                  // Provider.of<UserProvider>(context, listen: false).updateUserSignature(XFile.fromData(signature!), context);
                 });
               } else {
                 Utils.showErrorToast(context, 'Please add signature');

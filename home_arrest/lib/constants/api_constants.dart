@@ -8,7 +8,7 @@ class ApiConstants {
   static const String changePassword = "/user/update-password";
   static const String addOffendorProfilePic = "/offender/profile-pic";
   static const String getAdminProfileDeatils = "/user/profile";
-  static const String addAdminProfilePic = "/offender/profile-pic";
+  static const String addAdminProfilePic = "/user/profile/profile-pic";
   static const String updateAdminProfile = "/user/update-profile";
   static const String getALertsListing = "/user/get-alerts";
   static const String addUserSignature = "/user/add-signature";

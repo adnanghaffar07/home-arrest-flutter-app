@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:home_arrest/data/model/alerts_model.dart';
+import 'package:intl/intl.dart';
 
 import '../../../utils/utils.dart';
 
 class AlertsCell extends StatelessWidget {
-  final String obj;
+  final AlertsModel? obj;
   const AlertsCell({super.key, required this.obj});
 
   @override
@@ -23,9 +25,9 @@ class AlertsCell extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(obj, style: Utils.safeGoogleFont('Poppins', fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black)),
+                Text('${obj?.fullName}', style: Utils.safeGoogleFont('Poppins', fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black)),
                 Text(
-                  'Alert! Jamie Hill GPS location is out of range. Please arrest him',
+                  '${obj?.description}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Utils.safeGoogleFont('Poppins', fontSize: 12, fontWeight: FontWeight.w500, color: Colors.grey),
@@ -34,14 +36,14 @@ class AlertsCell extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 20),
-          Container(
+          SizedBox(
             height: 50,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 const Icon(Icons.arrow_forward_ios, color: Color(0xFF21356A), size: 15),
                 Text(
-                  '24 Mar, 11:34 PM',
+                  DateFormat('dd MMM, hh:mm a').format(obj!.timestamp!),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Utils.safeGoogleFont('Poppins', fontSize: 12, fontWeight: FontWeight.w500, color: Colors.grey),

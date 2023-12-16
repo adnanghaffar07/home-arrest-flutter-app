@@ -127,7 +127,11 @@ class _AddOffenderScreenState extends State<AddOffenderScreen> with AppbarMixin 
                           emailAddress: emailAddressController.text,
                           sentenceStartDate: sentenceStartDateController.text,
                           sentenceEndDate: sentenceEndDateController.text,
-                          monitorLevel: monitorLevelController.text,
+                          monitorLevel: monitorLevelController.text == 'Low'
+                              ? 3
+                              : monitorLevelController.text == 'Medium'
+                                  ? 2
+                                  : 1,
                           dateOfBirth: dobController.text,
                           checkIn: checkInsController.text,
                         );
