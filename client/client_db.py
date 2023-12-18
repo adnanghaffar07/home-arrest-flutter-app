@@ -147,9 +147,14 @@ def pin_checkin(request_id, pin, unique_id):
                 if checkin_request.get("requestId") == request_id:
                     if checkin_request.get("checkinPin") == pin:
                         checkin_request["status"] = True
+                        checkin_request["checkInTime"] = str(datetime.datetime.now())
+                        late_minutes, late_status = features.get_minutes_and_status(checkin_request.get("checkInTime", ""),
+                                                                                    checkin_request.get("deadline", ""))
+                        checkin_request["lateStatus"] = late_status
+                        checkin_request["lateMinutes"] = late_minutes
                         database.child("Offenders").child(unique_id).child("checkInRequest").child(key).update(
                             checkin_request)
-                        return 200
+                        return 200, checkin_request
                     else:
                         print(checkin_request)
                         return 401

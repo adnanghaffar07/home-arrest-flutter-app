@@ -15,7 +15,8 @@ def sign_up(request):
         print(f"ERROR VALIDATION >>> {e}")
         return {
             "status": False,
-            "message": "invalid input fields"
+            "message": "invalid input fields",
+            "error": e
         }, 422
     role_list = [1, 2, 3]
     role_status = int(request.get_json().get("role"))
@@ -112,7 +113,8 @@ def log_in(request):
         print(f"ERROR VALIDATION >>> {e}")
         return {
             "status": False,
-            "message": "invalid input fields"
+            "message": "invalid input fields",
+            "error": e
         }, 422
     print(payload)
     if len(payload.get("password", "")) < 6:
@@ -145,7 +147,8 @@ def update_profile(request):
         print(f"ERROR VALIDATION >>> {e}")
         return {
             "status": False,
-            "message": "invalid input fields"
+            "message": "invalid input fields",
+            "error": e
         }, 422
     unique_id = update_profile.payload.get("uniqueId")
     # DB function to update user profile details.

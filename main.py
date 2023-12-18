@@ -1,3 +1,5 @@
+import subprocess
+
 from flask_cors import CORS
 from flask import Flask, request
 import agent_controller
@@ -11,6 +13,19 @@ app.config["SECRET_KEY"] = '0F53127e42354ze38D4024a9e2789a24'  # generated secre
 cors = CORS(app)
 
 blp = Blueprint("validation", __name__, description="Model Validations")
+
+
+@app.route('/update-code', methods=['POST'])
+def update_code():
+    try:
+        # Run 'git pull origin backend' command
+        result = subprocess.run(['git', 'pull', 'origin', 'backend'], capture_output=True, text=True, check=True)
+
+        # If the command was successful, return a success message
+        return {'message': 'Code updated successfully', 'output': result.stdout}, 200
+    except subprocess.CalledProcessError as e:
+        # If the command failed, return an error message
+        return {'error': f'Error updating code: {e.stderr}', 'output': e.stdout}, 500
 
 
 @app.route("/", methods=["GET"])

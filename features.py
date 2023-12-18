@@ -127,3 +127,45 @@ def filter_duplicates_from_dict(data_list, key_name):
 def sort_by_dict_keys(response, key):
     sorted_response = sorted(response, key=lambda x: x[key])
     return sorted_response
+
+
+def get_minutes(deadline, checkin_time):
+    """
+    Function will return minutes difference between these two times.
+    """
+    # Convert string datetimes to datetime objects
+    deadline_dt = datetime.strptime(deadline, '%Y-%m-%d %H:%M:%S.%f')
+    checkin_time_dt = datetime.strptime(checkin_time, '%Y-%m-%d %H:%M:%S.%f')
+
+    # Calculate the time difference
+    time_difference = deadline_dt - checkin_time_dt
+
+    # Extract the minutes from the timedelta object
+    minutes_difference = time_difference.total_seconds() / 60
+
+    return int(minutes_difference)
+
+
+def get_minutes_and_status(deadline, checkin_time):
+    """
+    This function will return time status as well. how much minutes is remaining and late or early status.
+    """
+    # Convert string datetimes to datetime objects
+    deadline_dt = datetime.strptime(deadline, '%Y-%m-%d %H:%M:%S.%f')
+    checkin_time_dt = datetime.strptime(checkin_time, '%Y-%m-%d %H:%M:%S.%f')
+
+    # Calculate the time difference
+    time_difference = deadline_dt - checkin_time_dt
+
+    # Extract the minutes from the timedelta object
+    minutes_difference = int(time_difference.total_seconds() / 60)
+
+    # Determine if check-in is late or on time
+    if time_difference.total_seconds() > 0:
+        status = f"{abs(minutes_difference)} minutes late"
+    elif minutes_difference == 0:
+        status = "On time"
+    else:
+        status = f"{abs(minutes_difference)} minutes remaining"
+
+    return minutes_difference, status

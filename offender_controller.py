@@ -39,7 +39,8 @@ def add_new_offender(request):
         print(f"ERROR VALIDATION >>> {e}")
         return {
             "status": False,
-            "message": "invalid Fields."
+            "message": "invalid Fields.",
+            "error": e
         }, 422
     # this part of code assigning default values and handle null or missing fields.
     offender = Offender()
@@ -139,7 +140,8 @@ def update_offender_info(request):
         print(f"ERROR VALIDATION >>> {e}")
         return {
             "status": False,
-            "message": "invalid Fields."
+            "message": "invalid Fields.",
+            "error": e
         }, 422
     # DB Function to update details.
     data = db.update_offender_client_info(payload)

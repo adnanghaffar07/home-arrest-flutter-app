@@ -39,7 +39,8 @@ def client_login():
         print(f"ERROR VALIDATION >>> {e}")
         return {
             "status": False,
-            "message": "invalid input fields"
+            "message": "invalid input fields",
+            "error": e
         }, 422
     flag, data = db.login_user(payload)
     if flag:
@@ -185,11 +186,12 @@ def do_pin_checkin():
     unique_id = do_pin_checkin.payload.get("uniqueId")
     pin = payload.get("pin")
     # DB function to verify pin check-in
-    status_code = db.pin_checkin(request_id, pin, unique_id)
+    status_code, request_data = db.pin_checkin(request_id, pin, unique_id)
     if status_code == 200:
         return {
             "status": True,
-            "message": "Check-in Successful"
+            "message": "Check-in Successful",
+            "details": request_data
         }, status_code
     elif status_code == 401:
         return {

@@ -176,6 +176,9 @@ def get_offenders_details_list(user_id):
         details = database.child("Offenders").order_by_child("agentAssigned").equal_to(user_id).get().val()
         if details:
             payload = list(dict(details).values())
+            # for key, value in enumerate(payload):
+            #     if payload[key].get("checkInRequest"):
+            #         payload[key]["checkInRequest"] = list(dict(payload[key].get("checkInRequest")).values())
             return payload
         # payload = []
         # if details:
@@ -440,7 +443,10 @@ def add_request_checkin(payload, agent_id, offender_id):
         payload["requestedById"] = agent_id
         payload["requestId"] = uuid.uuid4().hex
         payload["requestTime"] = str(datetime.datetime.now())
+        payload["checkInTime"] = ""
         payload["status"] = False
+        payload["lateStatus"] = ""
+        payload["lateMinutes"] = 0
         database.child("Offenders").child(offender_id).child("checkInRequest").push(payload)
         return 200, payload
     except Exception as e:
