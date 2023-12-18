@@ -48,7 +48,7 @@ def not_found_error(e):
     print(e)
     return {
         "status": False,
-        "message": "End-point does not exist."
+        "message": "End-point does not exist. please Try again"
     }, 404
 
 
