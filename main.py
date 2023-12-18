@@ -3,6 +3,7 @@ import subprocess
 from flask_cors import CORS
 from flask import Flask, request
 import agent_controller
+import authentication_system
 from client import client_controller
 import offender_controller
 from flask_smorest import Blueprint
@@ -16,6 +17,7 @@ blp = Blueprint("validation", __name__, description="Model Validations")
 
 
 @app.route('/update-code', methods=['POST'])
+@authentication_system.authentication
 def update_code():
     try:
         # Run 'git pull origin backend' command
@@ -48,7 +50,7 @@ def not_found_error(e):
     print(e)
     return {
         "status": False,
-        "message": "End-point does not exist. please Try again"
+        "message": "End-point does not exist."
     }, 404
 
 

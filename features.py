@@ -133,7 +133,7 @@ def get_minutes(deadline, checkin_time):
     """
     Function will return minutes difference between these two times.
     """
-    # Convert string datetimes to datetime objects
+    # Convert string datetime to datetime objects
     deadline_dt = datetime.strptime(deadline, '%Y-%m-%d %H:%M:%S.%f')
     checkin_time_dt = datetime.strptime(checkin_time, '%Y-%m-%d %H:%M:%S.%f')
 
@@ -150,7 +150,7 @@ def get_minutes_and_status(deadline, checkin_time):
     """
     This function will return time status as well. how much minutes is remaining and late or early status.
     """
-    # Convert string datetimes to datetime objects
+    # Convert string datetime to datetime objects
     deadline_dt = datetime.strptime(deadline, '%Y-%m-%d %H:%M:%S.%f')
     checkin_time_dt = datetime.strptime(checkin_time, '%Y-%m-%d %H:%M:%S.%f')
 

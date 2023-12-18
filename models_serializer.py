@@ -5,11 +5,11 @@ class OffenderSerializer(Schema):
     """
         Offender client model.
     """
-    clientType = fields.Str(required=True)
-    firstName = fields.Str(required=True)
-    middleName = fields.Str(required=True)
-    lastName = fields.Str(required=True)
-    maidenName = fields.Str(required=True)
+    clientType = fields.Str(required=False)
+    firstName = fields.Str(required=False)
+    middleName = fields.Str(required=False)
+    lastName = fields.Str(required=False)
+    maidenName = fields.Str(required=False)
     dateOfBirth = fields.Str(required=False)
     ssn = fields.Str(required=False)
     phoneNumber = fields.Str(required=False)
