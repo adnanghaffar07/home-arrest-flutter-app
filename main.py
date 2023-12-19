@@ -300,6 +300,16 @@ def get_bracelet_history():
     return offender_controller.get_bracelet_history(request)
 
 
+@app.route("/offender/add-new-trip", methods=["POST"])
+def add_new_trip():
+    return offender_controller.add_new_trip(request)
+
+
+@app.route("/offender/trip-history", methods=["GET"])
+def get_trip_history():
+    return offender_controller.get_trip_history(request)
+
+
 # ************************************************** Client App End-points **************************************************
 
 @app.route("/client/set-alert", methods=["POST"])

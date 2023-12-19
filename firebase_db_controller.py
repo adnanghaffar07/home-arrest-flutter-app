@@ -524,3 +524,39 @@ def bracelet_history_logs(offender_id):
     except Exception as e:
         print(f"ERROR BRACELET HISTORY >>> {e}")
     return results
+
+
+def add_trip_details(payload):
+    """
+    Function to add trip details in history and current tip. Trip status is handling in following ways.
+    active -- Client on Route.
+    pending -- Client not on Route yet.
+    completed -- Client arrived at the destination successfully.
+    """
+    client_id = payload.get("clientId", "")
+    payload["tripId"] = uuid.uuid4().hex
+    try:
+        database.child("Offenders").child(client_id).child("tripHistory").push(payload)
+        database.child("Offenders").child(client_id).child("currentTrip").set(payload)
+        return True, payload
+    except Exception as e:
+        print(f"ERROR TRIP DETAILS ADD >>> {e}")
+    return False
+
+
+def get_location_history(offender_id):
+    try:
+        offender = database.child("Offenders").child(offender_id).get().val()
+        if offender:
+            offender = dict(offender)
+            payload = {
+                "firstName": offender.get("firstName"),
+                "lastName": offender.get("lastName"),
+                "profilePic": offender.get("profilePic"),
+                "tripHistory": list(dict(offender.get("tripHistory", {})).values()),
+            }
+            return payload
+    except Exception as e:
+        print(f"GET LOCATION HISTORY >>> {e}")
+    return {}
+

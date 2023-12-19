@@ -335,3 +335,31 @@ def get_bracelet_history(request):
         "details": results,
         "totalResults": len(results)
     }, 200
+
+
+@authentication
+def add_new_trip(request):
+    payload = request.get_json()
+    # DB Function to add trip details in the DB.
+    flag, payload = db.add_trip_details(payload)
+    if flag:
+        return {
+            "status": True,
+            "message": "Trip set successfully.",
+            "details": payload
+        }
+    return {
+        "status": False,
+        "message": "something went wrong."
+    }, 500
+
+@authentication
+def get_trip_history(request):
+    agent_id = request.args.to_dict().get("clientId", "")
+    # db functio to get clients location history or trip history.
+    results = db.get_location_history(agent_id)
+    return {
+        "status": True,
+        "details": results
+    }
+
