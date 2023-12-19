@@ -4,12 +4,15 @@ import 'package:home_arrest/constants/image_constants.dart';
 import 'package:home_arrest/extensions/margin_or_padding_extension.dart';
 import 'package:home_arrest/global_widgets/image_pickers/custom_image.dart';
 import 'package:home_arrest/providers/client_provider.dart';
+import 'package:home_arrest/view/client/check_in_history/check_in_hostory_screen.dart';
+import 'package:home_arrest/view/client/e-cell-habit/eCellHabit_history_screen.dart';
 import 'package:home_arrest/view/client/client_info/sub_screens/client_contact_screen.dart';
 import 'package:home_arrest/view/client/client_info/sub_screens/client_offense_screen.dart';
 import 'package:home_arrest/view/client/client_info/sub_screens/client_work_screen.dart';
 import 'package:home_arrest/view/client/client_info/widgets/basic_info_widget.dart';
 import 'package:home_arrest/view/client/ping_current_location/ping_current_location_screen.dart';
 import 'package:provider/provider.dart';
+// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 
 import '../../../data/model/offender_model.dart';
@@ -17,6 +20,7 @@ import '../../../global_widgets/global_scaffold/global_scaffold.dart';
 import '../../../mixins/appbar_mixin.dart';
 import '../../../utils/utils.dart';
 import '../request_check_in/request_check_in_screen.dart';
+import 'sub_screens/client_basic_screen.dart';
 
 class ClientInfoScreen extends StatefulWidget {
   final OffendorModel? offendorModel;
@@ -57,10 +61,10 @@ class _ClientInfoScreenState extends State<ClientInfoScreen> with AppbarMixin {
                 PopupMenuButton(
                   onSelected: (value) {},
                   position: PopupMenuPosition.under,
-                  child: const Icon(
-                    Icons.file_copy,
-                    color: Color(0xFF21356A),
-                  ).marginOnly(right: 15),
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 15),
+                    child: Image.asset(ImagesConstants.report, color: const Color(0xFF21356A), width: 25),
+                  ),
                   itemBuilder: (BuildContext bc) {
                     return const [
                       PopupMenuItem(value: '/Court-Order', child: Text("Court Order")),
@@ -77,29 +81,15 @@ class _ClientInfoScreenState extends State<ClientInfoScreen> with AppbarMixin {
           body: ListView(
             children: [
               SizedBox(
-                height: 55,
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: tabs.length,
-                  itemBuilder: ((context, index) {
-                    return InkWell(
-                      onTap: () {
-                        if (index == 0) {
-                          Navigator.pushNamed(context, PingCurrentLocationScreen.routeName);
-                        } else if (index == 1) {
-                          Navigator.pushNamed(context, RequestCheckInScreen.routeName);
-                        }
-                      },
-                      child: Container(
-                        width: 63,
-                        margin: const EdgeInsets.only(right: 10),
-                        decoration: BoxDecoration(color: const Color(0xFF21356A), borderRadius: BorderRadius.circular(7)),
-                        padding: const EdgeInsets.symmetric(vertical: 07),
-                        child: Image.asset(tabs[index], color: Colors.white),
-                      ),
-                    );
-                  }),
+                height: 35,
+                child: Row(
+                  children: [
+                    _topButton(0),
+                    _topButton(1),
+                    _topButton(2),
+                    _topButton(3),
+                    _topButton(4),
+                  ],
                 ),
               ),
               Container(
@@ -135,7 +125,6 @@ class _ClientInfoScreenState extends State<ClientInfoScreen> with AppbarMixin {
                               Text("Monitor Time: 10:00 thur 22:00", style: Utils.safeGoogleFont('Poppins', fontSize: 12, fontWeight: FontWeight.w300, color: const Color(0xFF21356A)))
                             ],
                           )),
-                          const Icon(Icons.edit_sharp, color: Color(0xFF21356A))
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -159,49 +148,74 @@ class _ClientInfoScreenState extends State<ClientInfoScreen> with AppbarMixin {
                       ),
                     ],
                   )),
-              if (clientProvider.selectedClientInfoType == null)
-                GridView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 3, crossAxisSpacing: 13, mainAxisSpacing: 5),
-                  shrinkWrap: true,
-                  itemCount: clientProvider.clientInfoTypes.length,
-                  itemBuilder: ((context, index) {
-                    return InkWell(
-                      borderRadius: BorderRadius.circular(7),
-                      onTap: () {
-                        if (index == 0) {
-                          clientProvider.selectClientInfoType(index);
-                        } else if (index == 1) {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => ClientOffenseDetailsScreen()));
-                        } else if (index == 2) {
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => ClientContactDetailScreen()));
-                        } else if(index == 5){
-                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => ClientWorkDetailScreen()));
-                        }
-                      },
-                      child: Container(
-                        width: 50,
-                        padding: const EdgeInsets.only(left: 13),
-                        alignment: Alignment.centerLeft,
-                        decoration: BoxDecoration(color: const Color(0xFF21356A).withOpacity(0.07), borderRadius: BorderRadius.circular(7)),
-                        child: Text(
-                          clientProvider.clientInfoTypes[index].name,
-                          style: Utils.safeGoogleFont('Poppins', fontSize: 15, fontWeight: FontWeight.w600, color: const Color(0xFF21356A)),
-                        ),
+              // if (clientProvider.selectedClientInfoType == null)
+              GridView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 3, crossAxisSpacing: 13, mainAxisSpacing: 5),
+                shrinkWrap: true,
+                itemCount: clientProvider.clientInfoTypes.length,
+                itemBuilder: ((context, index) {
+                  return InkWell(
+                    borderRadius: BorderRadius.circular(7),
+                    onTap: () {
+                      if (index == 0) {
+                        // clientProvider.selectClientInfoType(index);
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ClientBasicDetailsScreen()));
+                      } else if (index == 1) {
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ClientOffenseDetailsScreen()));
+                      } else if (index == 2) {
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ClientContactDetailScreen()));
+                      } else if (index == 5) {
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ClientWorkDetailScreen()));
+                      }
+                    },
+                    child: Container(
+                      width: 50,
+                      padding: const EdgeInsets.only(left: 13),
+                      alignment: Alignment.centerLeft,
+                      decoration: BoxDecoration(color: const Color(0xFF21356A).withOpacity(0.07), borderRadius: BorderRadius.circular(7)),
+                      child: Text(
+                        clientProvider.clientInfoTypes[index].name,
+                        style: Utils.safeGoogleFont('Poppins', fontSize: 15, fontWeight: FontWeight.w600, color: const Color(0xFF21356A)),
                       ),
-                    );
-                  }),
-                ),
-              if (clientProvider.selectedClientInfoType == 'Basic')
-                BasicInfoWidget(
-                  onTap: () {
-                    clientProvider.selectClientInfoType(0);
-                  },
-                ),
+                    ),
+                  );
+                }),
+              ),
+              // if (clientProvider.selectedClientInfoType == 'Basic')
+              //   BasicInfoWidget(
+              //     onTap: () {
+              //       clientProvider.selectClientInfoType(0);
+              //     },
+              //   ),
             ],
           ).marginSymmetric(horizontal: 15),
         );
       },
     ));
+  }
+
+  Widget _topButton(int index) {
+    return Expanded(
+      child: InkWell(
+        onTap: () {
+          if (index == 0) {
+            Navigator.pushNamed(context, PingCurrentLocationScreen.routeName);
+          } else if (index == 1) {
+            Navigator.pushNamed(context, RequestCheckInScreen.routeName);
+          } else if (index == 2) {
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => const CheckInHistoryScreen()));
+          } else if (index == 3) {
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ECellHabitHistoryScreen()));
+          }
+        },
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 5),
+          decoration: BoxDecoration(color: const Color(0xFF21356A), borderRadius: BorderRadius.circular(7)),
+          padding: const EdgeInsets.symmetric(vertical: 7),
+          child: Image.asset(tabs[index], color: Colors.white),
+        ),
+      ),
+    );
   }
 }

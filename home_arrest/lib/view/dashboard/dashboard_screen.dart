@@ -26,7 +26,7 @@ class DashboardScreen extends StatelessWidget {
           extendBody: true,
           body: screens[provider.selectedIndex],
           bottomNavigationBar: Container(
-            height: 90,
+            height: 100,
             width: double.infinity,
             decoration: const BoxDecoration(
               color: Color(0xFF21356A),

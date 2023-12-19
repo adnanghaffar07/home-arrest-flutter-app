@@ -36,4 +36,6 @@ class ImagesConstants {
   static const String menu = 'assets/images/drawer_icon.png';
   static const String edit = 'assets/images/edit.png';
   static const String addOffendor = 'assets/images/add_offendor.png';
+  static const String braceletConnection = 'assets/images/bracelet_connection.png';
+  static const String report = 'assets/images/report.png';
 }

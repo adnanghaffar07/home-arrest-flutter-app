@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:home_arrest/constants/image_constants.dart';
@@ -83,92 +85,106 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> with Appb
             return clientProvider.isLoading
                 ? const Center(child: CupertinoActivityIndicator())
                 : clientProvider.offenders.isNotEmpty
-                    ? Column(
-                        children: [
-                          Stack(
-                            alignment: Alignment.centerRight,
+                    ? LayoutBuilder(
+                        builder: (context, constraints) {
+                          final screenWidth = MediaQuery.of(context).size.width;
+                          final totalWidth = clientProvider.offenders.length * 65;
+                          log('totalWidth $totalWidth, screenWidth $screenWidth, showArrow ${totalWidth > screenWidth}');
+                          return Column(
                             children: [
-                              SizedBox(
-                                height: 85,
-                                width: double.infinity,
-                                child: ListView.separated(
-                                  controller: _scrollController,
-                                  itemCount: clientProvider.offenders.length,
-                                  scrollDirection: Axis.horizontal,
-                                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                                  itemBuilder: (context, index) {
-                                    var offender = clientProvider.offenders[index];
+                              Stack(
+                                alignment: Alignment.centerRight,
+                                children: [
+                                  SizedBox(
+                                    height: 80,
+                                    width: double.infinity,
+                                    child: ListView.separated(
+                                      controller: _scrollController,
+                                      itemCount: clientProvider.offenders.length,
+                                      scrollDirection: Axis.horizontal,
+                                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                                      itemBuilder: (context, index) {
+                                        var offender = clientProvider.offenders[index];
 
-                                    return InkWell(
-                                      onTap: () {
-                                        clientProvider.setSelectedOffendor(index);
+                                        return InkWell(
+                                          onTap: () {
+                                            clientProvider.setSelectedOffendor(index);
+                                          },
+                                          child: Container(
+                                            width: 65,
+                                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Container(
+                                                  height: 55,
+                                                  width: 60,
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    border: Border.all(
+                                                      width: 3,
+                                                      color: offender.monitorLevel == 3
+                                                          ? Colors.green
+                                                          : offender.monitorLevel == 2
+                                                              ? Colors.yellow
+                                                              : Colors.red,
+                                                    ),
+                                                  ),
+                                                  child: Center(
+                                                    child: ClipRRect(
+                                                      borderRadius: BorderRadius.circular(50),
+                                                      child: CustomImage(image: offender.profilePic ?? '', height: 55, width: 55, fit: BoxFit.fill),
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 3.5),
+                                                Text(
+                                                  '${offender.firstName}',
+                                                  style: Utils.safeGoogleFont('Poppins', fontSize: 12, fontWeight: FontWeight.w500),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
                                       },
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                                      separatorBuilder: (context, index) {
+                                        return const SizedBox(width: 0);
+                                      },
+                                    ),
+                                  ),
+                                  if (totalWidth > screenWidth)
+                                    Container(
+                                      margin: const EdgeInsets.only(right: 20),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          _scrollController.animateTo(
+                                            _scrollController.position.maxScrollExtent,
+                                            duration: const Duration(milliseconds: 700),
+                                            curve: Curves.easeOut,
+                                          );
+                                        },
                                         child: Column(
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
                                             Container(
-                                              height: 55,
-                                              width: 55,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                border: Border.all(
-                                                  width: 3,
-                                                  color: offender.monitorLevel == 3
-                                                      ? Colors.green
-                                                      : offender.monitorLevel == 2
-                                                          ? Colors.yellow
-                                                          : Colors.red,
-                                                ),
-                                              ),
-                                              child: Center(
-                                                child: ClipRRect(
-                                                  borderRadius: BorderRadius.circular(50),
-                                                  child: CustomImage(image: offender.profilePic ?? '', height: 55, width: 55, fit: BoxFit.fill),
-                                                ),
-                                              ),
+                                              height: 30,
+                                              width: 30,
+                                              decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(width: 2), color: const Color(0xFF21356A).withOpacity(0.9)),
+                                              child: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 10),
                                             ),
-                                            const SizedBox(height: 5),
-                                            Text('${offender.firstName}'),
+                                            const SizedBox(height: 15),
                                           ],
                                         ),
                                       ),
-                                    );
-                                  },
-                                  separatorBuilder: (context, index) {
-                                    return const SizedBox(width: 5);
-                                  },
-                                ),
+                                    ),
+                                ],
                               ),
-                              Container(
-                                margin: const EdgeInsets.only(right: 20),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    _scrollController.animateTo(
-                                      _scrollController.position.maxScrollExtent,
-                                      duration: const Duration(milliseconds: 700),
-                                      curve: Curves.easeOut,
-                                    );
-                                  },
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        height: 30,
-                                        width: 30,
-                                        decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(width: 2), color: const Color(0xFF21356A).withOpacity(0.9)),
-                                        child: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 10),
-                                      ),
-                                      const SizedBox(height: 15),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                              Expanded(child: CLientDashboardDetailWidget(offendorModel: clientProvider.offenders.where((element) => element.isSelected).toList()[0])),
                             ],
-                          ),
-                          Expanded(child: CLientDashboardDetailWidget(offendorModel: clientProvider.offenders.where((element) => element.isSelected).toList()[0])),
-                        ],
+                          );
+                        },
                       )
                     : Center(child: Text('No Clients Found', style: Utils.safeGoogleFont('Poppins', fontSize: 16, fontWeight: FontWeight.w500, color: const Color(0xFF21356A))));
           },

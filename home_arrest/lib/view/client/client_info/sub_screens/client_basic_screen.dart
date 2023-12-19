@@ -396,29 +396,29 @@ class _ClientBasicDetailsScreenState extends State<ClientBasicDetailsScreen> wit
                   ],
                 ),
                 const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      child: CustomElevatedButton(
-                        onTap: () {},
-                        title: Text(
-                          'Add Signature',
-                          style: Utils.safeGoogleFont('Poppins', fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 15),
-                    Expanded(
-                      child: CustomElevatedButton(
-                        onTap: () {},
-                        title: Text(
-                          'Face Recognition',
-                          style: Utils.safeGoogleFont('Poppins', fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
+                // Row(
+                //   children: [
+                //     Expanded(
+                //       child: CustomElevatedButton(
+                //         onTap: () {},
+                //         title: Text(
+                //           'Add Signature',
+                //           style: Utils.safeGoogleFont('Poppins', fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
+                //         ),
+                //       ),
+                //     ),
+                //     const SizedBox(width: 15),
+                //     Expanded(
+                //       child: CustomElevatedButton(
+                //         onTap: () {},
+                //         title: Text(
+                //           'Face Recognition',
+                //           style: Utils.safeGoogleFont('Poppins', fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
+                //         ),
+                //       ),
+                //     )
+                //   ],
+                // ),
               ],
             ),
           ),

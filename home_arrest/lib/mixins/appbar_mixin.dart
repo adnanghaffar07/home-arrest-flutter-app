@@ -33,7 +33,7 @@ class AppbarMixin {
       centerTitle: true,
       title: Text(
         title,
-        style: Utils.safeGoogleFont('Poppins', fontSize: 16, fontWeight: FontWeight.w500, color: titleColor),
+        style: Utils.safeGoogleFont('Poppins', fontSize: 16, fontWeight: FontWeight.w700, color: titleColor),
       ),
       actions: actions,
       leadingWidth: 68,

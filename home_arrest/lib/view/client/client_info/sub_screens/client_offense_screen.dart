@@ -387,29 +387,29 @@ class _ClientOffenseDetailsScreenState extends State<ClientOffenseDetailsScreen>
                   thickness: 1,
                 ),
                 const SizedBox(height: 40),
-                Row(
-                  children: [
-                    Expanded(
-                      child: CustomElevatedButton(
-                        onTap: () {},
-                        title: Text(
-                          'Add Signature',
-                          style: Utils.safeGoogleFont('Poppins', fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 15),
-                    Expanded(
-                      child: CustomElevatedButton(
-                        onTap: () {},
-                        title: Text(
-                          'Face Recognition',
-                          style: Utils.safeGoogleFont('Poppins', fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
+                // Row(
+                //   children: [
+                //     Expanded(
+                //       child: CustomElevatedButton(
+                //         onTap: () {},
+                //         title: Text(
+                //           'Add Signature',
+                //           style: Utils.safeGoogleFont('Poppins', fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
+                //         ),
+                //       ),
+                //     ),
+                //     const SizedBox(width: 15),
+                //     Expanded(
+                //       child: CustomElevatedButton(
+                //         onTap: () {},
+                //         title: Text(
+                //           'Face Recognition',
+                //           style: Utils.safeGoogleFont('Poppins', fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
+                //         ),
+                //       ),
+                //     )
+                //   ],
+                // ),
               ],
             ),
           ),

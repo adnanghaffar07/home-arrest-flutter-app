@@ -1,4 +1,9 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import 'package:home_arrest/data/model/offender_model.dart';
 
 import '../../../../global_widgets/image_pickers/custom_image.dart';
@@ -6,9 +11,26 @@ import '../../../../utils/utils.dart';
 import '../../client_history/client_history_screen.dart';
 import '../../client_location/widget/client_location_expandable_cell.dart';
 
-class CLientDashboardDetailWidget extends StatelessWidget {
+class CLientDashboardDetailWidget extends StatefulWidget {
   final OffendorModel offendorModel;
-  const CLientDashboardDetailWidget({super.key, required this.offendorModel});
+  const CLientDashboardDetailWidget({
+    Key? key,
+    required this.offendorModel,
+  }) : super(key: key);
+
+  @override
+  State<CLientDashboardDetailWidget> createState() => _CLientDashboardDetailWidgetState();
+}
+
+class _CLientDashboardDetailWidgetState extends State<CLientDashboardDetailWidget> {
+  final Completer<GoogleMapController> _controller = Completer<GoogleMapController>();
+
+  static const CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(37.42796133580664, -122.085749655962),
+    zoom: 14.4746,
+  );
+
+  static const CameraPosition _kLake = CameraPosition(bearing: 192.8334901395799, target: LatLng(37.43296265331129, -122.08832357078792), tilt: 59.440717697143555, zoom: 19.151926040649414);
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +39,7 @@ class CLientDashboardDetailWidget extends StatelessWidget {
       child: Column(
         children: [
           _borderedContainer(
-            title: 'Client Location',
+            title: 'Client Current Location',
             icon: InkWell(
               onTap: () {
                 Navigator.pushNamed(context, ClientHistoryScreen.routeName);
@@ -28,10 +50,17 @@ class CLientDashboardDetailWidget extends StatelessWidget {
               ),
             ),
             view: Container(
-              height: 300,
+              height: 350,
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Image.asset('assets/images/map.png', fit: BoxFit.fill),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: GoogleMap(
+                mapToolbarEnabled: false,
+                myLocationButtonEnabled: false,
+                initialCameraPosition: _kGooglePlex,
+                onMapCreated: (GoogleMapController controller) {
+                  _controller.complete(controller);
+                },
+              ),
             ),
           ),
           const SizedBox(height: 15),
@@ -40,7 +69,7 @@ class CLientDashboardDetailWidget extends StatelessWidget {
               switch (index) {
                 case 0:
                   return ClientLocationExpandableCell(
-                    title: 'Summary',
+                    title: 'Client Summary',
                     expandedHeight: 470,
                     data: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,10 +78,11 @@ class CLientDashboardDetailWidget extends StatelessWidget {
                           children: [
                             ClipRRect(
                               borderRadius: BorderRadius.circular(50),
-                              child: CustomImage(image: offendorModel.profilePic ?? '', height: 50, width: 50, fit: BoxFit.fill),
+                              child: CustomImage(image: widget.offendorModel.profilePic ?? '', height: 50, width: 50, fit: BoxFit.fill),
                             ),
                             const SizedBox(width: 20),
-                            Text('${offendorModel.firstName} ${offendorModel.lastName}', style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black)),
+                            Text('${widget.offendorModel.firstName} ${widget.offendorModel.lastName}',
+                                style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black)),
                           ],
                         ),
                         const SizedBox(height: 10),
@@ -61,7 +91,7 @@ class CLientDashboardDetailWidget extends StatelessWidget {
                           style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w700, color: Colors.grey),
                         ),
                         Text(
-                          '${offendorModel.phoneNumber}',
+                          '${widget.offendorModel.phoneNumber}',
                           style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black),
                         ),
                         const SizedBox(height: 10),
@@ -70,7 +100,7 @@ class CLientDashboardDetailWidget extends StatelessWidget {
                           style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w700, color: Colors.grey),
                         ),
                         Text(
-                          '${offendorModel.emailAddress}',
+                          '${widget.offendorModel.emailAddress}',
                           style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black),
                         ),
                         const SizedBox(height: 10),
@@ -79,7 +109,7 @@ class CLientDashboardDetailWidget extends StatelessWidget {
                           style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w700, color: Colors.grey),
                         ),
                         Text(
-                          offendorModel.contactDetails?.homeAddress ?? '',
+                          widget.offendorModel.contactDetails?.homeAddress ?? '',
                           style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black),
                         ),
                         const SizedBox(height: 10),
@@ -88,7 +118,7 @@ class CLientDashboardDetailWidget extends StatelessWidget {
                           style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w700, color: Colors.grey),
                         ),
                         Text(
-                          offendorModel.workDetails?.workAddress ?? '',
+                          widget.offendorModel.workDetails?.workAddress ?? '',
                           style: Utils.safeGoogleFont('Poppins', fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black),
                         ),
                         const SizedBox(height: 10),
@@ -340,7 +370,7 @@ class CLientDashboardDetailWidget extends StatelessWidget {
               children: [
                 Text(
                   title ?? '',
-                  style: Utils.safeGoogleFont('Poppins', fontSize: 16, fontWeight: FontWeight.w500, color: const Color(0xFF21356A)),
+                  style: Utils.safeGoogleFont('Poppins', fontSize: 18, fontWeight: FontWeight.w500, color: const Color(0xFF21356A)),
                 ),
                 icon ?? const SizedBox(),
               ],

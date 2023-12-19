@@ -4,6 +4,7 @@
         android:label="home_arrest"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <meta-data android:name="com.google.android.geo.AIzaSyAFLYWOCHyvUCaYnKo3YWvQpM_DwK0gSj0" android:value="YOUR-KEY-HERE"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

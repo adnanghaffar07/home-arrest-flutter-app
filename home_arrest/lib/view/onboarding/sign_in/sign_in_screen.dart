@@ -20,7 +20,7 @@ class _SignInScreenState extends State<SignInScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   bool isRememberMe = false;
-  bool isShowPassword = false;
+  bool isShowPassword = true    ;
   @override
   Widget build(BuildContext context) {
     return GlobalScaffold(

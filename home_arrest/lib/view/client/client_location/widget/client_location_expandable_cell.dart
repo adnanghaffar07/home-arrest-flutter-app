@@ -46,7 +46,7 @@ class _ClientLocationExpandableCellState extends State<ClientLocationExpandableC
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(widget.title, style: Utils.safeGoogleFont('Poppins', fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black)),
+                  Text(widget.title,  style: Utils.safeGoogleFont('Poppins', fontSize: 18, fontWeight: FontWeight.w500, color: const Color(0xFF21356A)),),
                   Icon(!isExpanded ? Icons.arrow_forward_ios : Icons.expand_more, color: const Color(0xFF21356A), size: isExpanded ? 25 : 15)
                 ],
               ),
