@@ -40,7 +40,7 @@ def client_login():
         return {
             "status": False,
             "message": "invalid input fields",
-            "error": e
+            "error": str(e)
         }, 422
     flag, data = db.login_user(payload)
     if flag:
