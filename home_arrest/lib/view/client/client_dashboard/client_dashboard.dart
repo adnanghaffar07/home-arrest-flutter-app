@@ -3,19 +3,15 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:home_arrest/constants/image_constants.dart';
-import 'package:home_arrest/providers/auth_provider.dart';
 import 'package:home_arrest/providers/client_provider.dart';
 import 'package:home_arrest/providers/user_provider.dart';
-import 'package:home_arrest/view/client/add_offender/add_offender_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../global_widgets/drawer/drawer.dart';
 import '../../../global_widgets/global_scaffold/global_scaffold.dart';
 import '../../../global_widgets/image_pickers/custom_image.dart';
 import '../../../mixins/appbar_mixin.dart';
 import '../../../utils/utils.dart';
-import '../search_client/search_client_screen.dart';
 import 'widgets/client_dashboard_detail_widget.dart';
 
 class ClientDashboardScreen extends StatefulWidget {
