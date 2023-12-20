@@ -25,6 +25,58 @@ class Offender:
     active: bool
     addedBy: str
     profilePic: str
+    offenceDetails = {
+        "priorArrest": "",
+        "priorArrestJurisdiction": "",
+        "cause1": "",
+        "cause2": "",
+        "judgeName": "",
+        "courtName": "",
+        "caseNo": "",
+        "offence": "",
+        "appearanceDate": "",
+        "appearanceTime": "",
+        "specialInstruction": "",
+        "clientNotification": {
+            "gpsLocationUpdate": False,
+            "monitoringAlerts": {
+                "alertEmails": "",
+                "firstWarning": 5,
+                "secondWarning": 15,
+                "weeklyReports": {
+                    "reportEmails": "",
+                    "weeklyReport": ""
+                }
+
+            }
+        }
+    }
+    mainScheduleDetails = {
+        "1-AM": False,
+        "2-AM": False,
+        "3-AM": False,
+        "4-AM": False,
+        "5-AM": False,
+        "6-AM": False,
+        "7-AM": False,
+        "8-AM": False,
+        "9-AM": False,
+        "10-AM": False,
+        "11-AM": False,
+        "12-PM": False,
+        "1-PM": False,
+        "2-PM": False,
+        "3-PM": False,
+        "4-PM": False,
+        "5-PM": False,
+        "6-PM": False,
+        "7-PM": False,
+        "8-PM": False,
+        "9-PM": False,
+        "10-PM": False,
+        "11-PM": False,
+        "midnight": False
+    }
     scoreCard = {
         "monitoringPeriod": "20-03-2023",
         "totalCheckins": 0,
@@ -95,6 +147,7 @@ class Offender:
         "workAddress": "",
         "workCity": "",
         "workCountry": "",
+        "workState": "",
         "workProvince": "",
         "workPostalCode": "",
         "workLat": 31.342,
@@ -102,7 +155,8 @@ class Offender:
         "workRadius": 0,
         "workPhoneNumber": "",
         "employerName": ""
-    }
+    },
+    paymentHistory = []
     personalDetails = {
         "materialStatus": "",
         "rentOrOwn": "",
@@ -120,11 +174,17 @@ class Offender:
         "sex": "",
         "height": "",
         "weight": "",
-        "eye": ""
+        "eye": "",
+        "hair": "",
+        "build": "",
+        "leftOrRightHanded": "",
+        "tattoos": "",
+        "prevMarriedName": "",
     }
     billingDetails = {
         "monitoringFee": 0.0,
         "signUpFee": 0.0,
+        "adminFee": 0.0,
         "paymentAmount": 0.0,
         "paymentFrequency": "",
         "thirdPartyPay": False,
