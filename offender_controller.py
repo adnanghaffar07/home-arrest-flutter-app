@@ -71,6 +71,9 @@ def add_new_offender(request):
     offender.courtAppearances = payload.get("courtAppearances", offender.courtAppearances)
     offender.checkInRequest = payload.get("checkInRequest", {})
     offender.pinNumber = offender.pinNumber
+    offender.paymentHistory = offender.paymentHistory
+    offender.mainScheduleDetails = offender.mainScheduleDetails
+    offender.offenceDetails = offender.offenceDetails
     offender.braceletName = offender.braceletName
     offender.braceletVersion = offender.braceletVersion
     offender.breathalyzer = offender.breathalyzer
