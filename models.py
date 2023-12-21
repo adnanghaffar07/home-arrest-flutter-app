@@ -155,7 +155,7 @@ class Offender:
         "workRadius": 0,
         "workPhoneNumber": "",
         "employerName": ""
-    },
+    }
     paymentHistory = []
     personalDetails = {
         "materialStatus": "",
