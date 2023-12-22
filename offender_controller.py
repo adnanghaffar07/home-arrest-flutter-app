@@ -147,6 +147,11 @@ def update_offender_info(request):
             "error": str(e)
         }, 422
     # DB Function to update details.
+    if not payload.get("uniqueId"):
+        return {
+            "status": False,
+            "message": "Offender not found. offender ID missing in payload."
+        }, 404
     data = db.update_offender_client_info(payload)
     if data:
         return {
