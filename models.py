@@ -34,6 +34,12 @@ class Offender:
         "courtName": "",
         "caseNo": "",
         "offence": "",
+        "monitorTime": "",
+        "photoCheckIn": False,
+        "videoCheckIn": False,
+        "sobrietyCheckIn": False,
+        "mainScheduleOnly": False,
+        "monitoringFrequency": "",
         "appearanceDate": "",
         "appearanceTime": "",
         "specialInstruction": "",
@@ -124,14 +130,9 @@ class Offender:
     appearanceTime = ""
     specialInstructions = ""
     monitoringInformation = ""
-    monitoringFrequency = ""
-    monitorTime = ""
-    photoCheckIn = False
-    videoCheckIn = False
-    sobrietyCheckIn = False
+
     braceletConnection = False
     requiredTimesCheckIn = False
-    mainScheduleOnly = False
     contactDetails = {
         "homeAddress": "",
         "homeCity": "",
@@ -190,4 +191,11 @@ class Offender:
         "thirdPartyPay": False,
         "thirdParty": ""
     }
-    guarantors = ""
+    guarantors = {
+        "firstName": "",
+        "lastName": "",
+        "address": "",
+        "email": "",
+        "homePhoneNumber": "",
+        "workPhoneNumber": ""
+    }

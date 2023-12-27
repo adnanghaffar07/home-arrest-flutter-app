@@ -55,7 +55,7 @@ class OffenderSerializer(Schema):
     workDetails = fields.Dict(required=False)
     personalDetails = fields.Dict(required=False)
     billingDetails = fields.Dict(required=False)
-    guarantors = fields.Str(required=False)
+    guarantors = fields.Dict(required=False)
 
 
 class Login(Schema):

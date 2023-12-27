@@ -361,13 +361,13 @@ def add_new_trip(request):
         "message": "something went wrong."
     }, 500
 
+
 @authentication
 def get_trip_history(request):
     agent_id = request.args.to_dict().get("clientId", "")
-    # db functio to get clients location history or trip history.
+    # db function to get clients location history or trip history.
     results = db.get_location_history(agent_id)
     return {
         "status": True,
         "details": results
     }
-
