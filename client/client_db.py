@@ -99,7 +99,7 @@ def upload_image_on_firebase_storage(user_name, document_name, image_path, field
     return False, None
 
 
-def upload_document_on_storage(user_name, document_name, document_path, field_name, document_type):
+def upload_document_on_storage(user_name, document_name, document_path, field_name, document_type, description):
     try:
         unique_id = features.get_unique_name_for_document(user_name)
         doc = storage.child(document_path).put(document_path)
@@ -107,7 +107,9 @@ def upload_document_on_storage(user_name, document_name, document_path, field_na
         doc_url = storage.child(document_path).get_url(token=doc.get("downloadTokens"))
         print(doc_url)
         resp = database.child(document_name).child(unique_id).child(field_name).push({"documentUrl": doc_url,
-                                                                                      "documentType": document_type
+                                                                                      "documentTitle": document_type,
+                                                                                      "description": description,
+                                                                                      "uploadDate": str(datetime.datetime.now())
                                                                                       })
         if resp:
             return True, doc_url
@@ -148,8 +150,9 @@ def pin_checkin(request_id, pin, unique_id):
                     if checkin_request.get("checkinPin") == pin:
                         checkin_request["status"] = True
                         checkin_request["checkInTime"] = str(datetime.datetime.now())
-                        late_minutes, late_status = features.get_minutes_and_status(checkin_request.get("checkInTime", ""),
-                                                                                    checkin_request.get("deadline", ""))
+                        late_minutes, late_status = features.get_minutes_and_status(
+                            checkin_request.get("checkInTime", ""),
+                            checkin_request.get("deadline", ""))
                         checkin_request["lateStatus"] = late_status
                         checkin_request["lateMinutes"] = late_minutes
                         database.child("Offenders").child(unique_id).child("checkInRequest").child(key).update(
@@ -174,3 +177,15 @@ def update_bracelet_logs(unique_id, connection_status):
     except Exception as e:
         print(f"ERROR BRACELET LOGS >>> {e}")
     return False
+
+
+def update_client_current_location(payload, user_id):
+    try:
+        user = database.child("Offenders").child(user_id).update(payload)
+        if user:
+            return 200
+        else:
+            return 404
+    except Exception as e:
+        print(f"ERROR UPDATING CURRENT LOCATION >>> {e}")
+    return 500

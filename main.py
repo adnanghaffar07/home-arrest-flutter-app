@@ -385,5 +385,13 @@ def add_bracelet_logs():
     return client_controller.add_bracelet_logs()
 
 
+@app.route("/client/update-location", methods=["POST"])
+def update_client_current_location():
+    """
+    This end-point will receive user's current location and update in the db.
+    """
+    return client_controller.update_user_current_location()
+
+
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=5000, threaded=True)

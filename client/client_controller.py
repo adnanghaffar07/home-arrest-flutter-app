@@ -124,7 +124,8 @@ def update_client_profile_pic():
 @client_authentication
 def upload_document():
     offender_id = upload_document.payload.get("uniqueId")
-    document_type = request.form.get("documentName", "document")
+    document_type = request.form.get("documentTitle", "document")
+    document_description = request.form.get("description", "")
     try:
         if 'document' in request.files:
             image_path = f"static/offender_profiles/{offender_id}/documents"
@@ -140,7 +141,7 @@ def upload_document():
             flag, image_url = db.upload_document_on_storage(offender_id,
                                                             "Offenders",
                                                             f"{image_path}/{rename_file}",
-                                                            "document", document_type)
+                                                            "document", document_type, document_description)
             if flag and image_url:
                 # to remove images from local storage after saving in firebase cloud storage.
                 os.remove(f"{image_path}/{rename_file}")
@@ -219,3 +220,25 @@ def add_bracelet_logs():
         "status": False,
         "message": "something went wrong..."
     }, 500
+
+
+@client_authentication
+def update_user_current_location():
+    payload = request.get_json()
+    user_id = update_user_current_location.payload.get("uniqueId", "")
+    # db function to update user current coordinates.
+    status_code = db.update_client_current_location(payload, user_id)
+    if status_code == 200:
+        return {
+            "status": True,
+            "message": "Coordinates updated successfully."
+        }, status_code
+    if status_code == 404:
+        return {
+            "status": False,
+            "message": f"Client Not Found with ID: {user_id}"
+        }, status_code
+    return {
+        "status": False,
+        "message": "Something went wrong"
+    }, status_code
