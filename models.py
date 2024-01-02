@@ -127,6 +127,7 @@ class Offender:
     allDocumentPresent = False
     absconded = False
     appearanceDate = ""
+    monitoringFrequency = ""
     appearanceTime = ""
     specialInstructions = ""
     monitoringInformation = ""
