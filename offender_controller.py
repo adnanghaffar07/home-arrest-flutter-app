@@ -260,7 +260,7 @@ def update_offender_profile_pic(request):
                 return {
                     "status": True,
                     "message": "profile pic saved successfully.",
-                    "signature": f"{image_url}"
+                    "profilePic": f"{image_url}"
                 }
             else:
                 return {
